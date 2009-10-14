@@ -1,16 +1,18 @@
-CC=g++
+CC=gcc
 CFLAGS=-c -Wall
-SOURCES=cmds.cpp sosh.cpp 
-OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=app
+SOURCES=cmds.c sosh.c
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=sosh
 
-all: clean $(SOURCES) $(EXECUTABLE)
+all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@
 
-.cpp.o:
+.c.o:
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
+	
+rebuild: clean all

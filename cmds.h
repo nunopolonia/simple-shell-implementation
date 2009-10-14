@@ -1,6 +1,6 @@
-/∗
-∗ cmds . h − s o s h command module
-∗/
+/*
+ * cmds - sosh command module
+*/
 
 #ifndef __CMDS_H__
 #define __CMDS_H__
