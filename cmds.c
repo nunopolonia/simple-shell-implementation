@@ -1,7 +1,9 @@
 #include "cmds.h"
 
 int cmd_quem() {
-  
+
+  system("who");
+
   return 0;
 }
 

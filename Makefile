@@ -1,16 +1,17 @@
 CC=gcc
 CFLAGS=-c -Wall
-SOURCES=cmds.c sosh.c
+LIBS=-lreadline
+SOURCES=aux.c cmds.c sosh.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=sosh
 
-all: $(SOURCES) $(EXECUTABLE)
+all: clean $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $(LIBS) $< -o $@
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)

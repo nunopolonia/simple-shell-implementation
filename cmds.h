@@ -5,6 +5,10 @@
 #ifndef __CMDS_H__
 #define __CMDS_H__
 
+#include <stdlib.h>
+#include <unistd.h>
+
+
 int cmd_quem();
 
 int cmd_psu();
