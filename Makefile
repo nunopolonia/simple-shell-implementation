@@ -8,10 +8,10 @@ EXECUTABLE=sosh
 all: clean $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) $(LIBS) -o $@
 
 .c.o:
-	$(CC) $(CFLAGS) $(LIBS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)

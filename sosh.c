@@ -32,10 +32,10 @@ int main (int argc, char *argv[]) {
     }
     /* child code */
     if( childpid == 0 ) {
-      if( strcmp(cmd, "quem\n") == 0 )
+      if( strcmp(cmd, "quem") == 0 )
           cmd_quem();
       else
-          perror("Comando não suportado\n");
+          printf("Comando não suportado\n");
       
       return 1;
     }

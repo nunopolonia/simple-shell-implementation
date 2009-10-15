@@ -1,22 +1,25 @@
 #include "aux.h"
 
 void exitfunction() {
-  char confirmation[] = "Deseja terminar o programa? (s/n)\n";
-  int confirmation_len = sizeof(confirmation);
-  char answer[max_char];
+  char question[] = "Deseja terminar o programa? (s/n)\n";
+  int question_len = sizeof(question);
+  char error[] = "Os parametros aceites são (s) ou (n)\n";
+  int error_len = sizeof(error);
+  char *answer;
   
-  write(STDERR_FILENO, confirmation, confirmation_len);
-  while( fgets(answer, max_char, stdin) ) {
-    if( strcmp(answer,"s\n") == 0 ) {
+  write(STDERR_FILENO, question, question_len);
+  while(TRUE) {
+    answer = soshReadline("> ");
+    if( strcmp(answer,"s") == 0 ) {
       exit(0);
     }
-    else if( strcmp(answer,"n\n") == 0 ) {
+    else if( strcmp(answer,"n") == 0 ) {
       break;
     }
     else
+      write(STDERR_FILENO, error, error_len);
       continue;
   }
-  return;
 }
 
 char *soshReadline(const char *prompt) {
