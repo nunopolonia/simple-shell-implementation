@@ -1,6 +1,4 @@
 #include <errno.h>
-#include <signal.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include "aux.h"
 #include "cmds.h"
@@ -12,9 +10,9 @@ int main (int argc, char *argv[]) {
   sigset_t mask, orig_mask;
 
   while(TRUE) {      
-    /* Signal install for Ctrl+C */
+    /* Signal install for Ctrl+C TODO switch with sigaction */
     signal(SIGINT, exitfunction);
-
+    
     cmd = soshReadline("> ");
     
     childpid = fork();
@@ -32,8 +30,18 @@ int main (int argc, char *argv[]) {
     }
     /* child code */
     if( childpid == 0 ) {
-      if( strcmp(cmd, "quem") == 0 )
-          cmd_quem();
+      /* "quem" process call */
+      if( strcmp(cmd, "quem") == 0 ) { cmd_quem(); }
+      /* "psu" process call */
+      else if( strcmp(cmd, "psu") == 0 ) { cmd_psu(); }
+      /* "ver" process call */
+      else if( strcmp(cmd, "ver") == 0 ) { cmd_ver(); }
+      /* "ajuda" process call */
+      else if( strcmp(cmd, "ajuda") == 0 ) { cmd_ajuda(); }
+      /* "localiza" process call */
+      else if( strcmp(cmd, "localiza") == 0 ) { cmd_localiza(); }
+      /* "exit" process call */
+      else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
       else
           printf("Comando não suportado\n");
       

@@ -13,9 +13,9 @@
 #define TRUE 1
 #define FALSE 0
 
-void exitfunction();
-
 char *soshReadline(const char *prompt);
+
+void exitfunction();
 
 
 #endif /* __AUX_H__ */

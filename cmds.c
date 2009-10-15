@@ -1,13 +1,15 @@
 #include "cmds.h"
 
 int cmd_quem() {
-
+  /* who system call */
   system("who");
 
   return 0;
 }
 
 int cmd_psu() {
+  /* lists the user processes */
+  system("ps ux");
   
   return 0;
 }
@@ -18,6 +20,12 @@ int cmd_usrbin(char** argv, int argc) {
 }
 
 int cmd_exit() {
+  /* kills the parent process TODO switch to SIGUSR1 */
+  if (kill(getppid(), SIGTERM) == -1)
+    perror ("Failed to kill parent");
+  /* guarantees that there's no zombie processes */
+  if (raise(SIGTERM) != 0)
+    perror("Failed to kill self"); 
   
   return 0;
 }
@@ -28,11 +36,20 @@ int cmd_localiza() {
 }
 
 int cmd_ver() {
+  fprintf(stdout,"sosh versão 0.2\n");
   
   return 0;
 }
 
 int cmd_ajuda() {
-  
+  fprintf(stdout,"sosh versão 0.2\n");
+  fprintf(stdout,"Comandos suportados:\n");
+  fprintf(stdout,"\tquem - mostra os utilizadores autenticados no sistema\n");
+  fprintf(stdout,"\tpsu - lista os processos do utilizador actual\n");
+  fprintf(stdout,"\tver - indica a versão do sosh\n");
+  fprintf(stdout,"\tajuda - disponibiliza esta ajuda\n");
+  fprintf(stdout,"\tlocaliza <cmd> - localiza os caminhos absolutos em que cmd aparece\n");
+  fprintf(stdout,"\texit - sai do sosh\n");
+
   return 0;
 }
