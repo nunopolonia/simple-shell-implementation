@@ -10,9 +10,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <signal.h>
-
-
-
+#include <readline/readline.h>
+#include <readline/history.h>
 
 int cmd_quem();
 
@@ -27,6 +26,8 @@ int cmd_localiza();
 int cmd_ver();
 
 int cmd_ajuda();
+
+int cmd_hist();
 
 #endif /* __CMDS_H__ */
 

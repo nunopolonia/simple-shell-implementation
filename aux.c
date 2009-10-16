@@ -36,8 +36,8 @@ char *soshReadline(const char *prompt) {
 	line_read = readline(prompt);
 
 	// If the line has any text in it, save it on the history.
-	//if (line_read && *line_read)
-	//	add_history(line_read);
+	if (line_read && *line_read)
+		add_history(line_read);
 
 	return (line_read);
 }

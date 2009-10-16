@@ -36,13 +36,13 @@ int cmd_localiza() {
 }
 
 int cmd_ver() {
-  fprintf(stdout,"sosh versão 0.2\n");
+  fprintf(stdout,"sosh versão 0.3b\n");
   
   return 0;
 }
 
 int cmd_ajuda() {
-  fprintf(stdout,"sosh versão 0.2\n");
+  fprintf(stdout,"sosh versão 0.3b\n");
   fprintf(stdout,"Comandos suportados:\n");
   fprintf(stdout,"\tquem - mostra os utilizadores autenticados no sistema\n");
   fprintf(stdout,"\tpsu - lista os processos do utilizador actual\n");
@@ -51,5 +51,18 @@ int cmd_ajuda() {
   fprintf(stdout,"\tlocaliza <cmd> - localiza os caminhos absolutos em que cmd aparece\n");
   fprintf(stdout,"\texit - sai do sosh\n");
 
+  return 0;
+}
+
+int cmd_hist() {
+  char **history;
+  int i;
+  
+  history = history_list();
+  
+  for (i = 0; i < sizeof(history); i++) {
+    printf("%d - %s\n", i+1,(char*)history[i]);
+  }
+  
   return 0;
 }

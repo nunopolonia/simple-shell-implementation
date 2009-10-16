@@ -9,12 +9,16 @@ int main (int argc, char *argv[]) {
   pid_t childpid;
   sigset_t mask, orig_mask;
 
+  /* Signal install for Ctrl+C TODO switch with sigaction */
+  signal(SIGINT, exitfunction);
+  /* Using gnu history */
+  using_history();
+
   while(TRUE) {      
-    /* Signal install for Ctrl+C TODO switch with sigaction */
-    signal(SIGINT, exitfunction);
-    
+    /* input function */
     cmd = soshReadline("> ");
     
+    /* fork */
     childpid = fork();
 
     /* blocking signals before executing children */
@@ -42,6 +46,8 @@ int main (int argc, char *argv[]) {
       else if( strcmp(cmd, "localiza") == 0 ) { cmd_localiza(); }
       /* "exit" process call */
       else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
+      /* "hist" process call */
+      else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
       else
           printf("Comando não suportado\n");
       
