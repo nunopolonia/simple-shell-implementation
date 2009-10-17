@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <sys/wait.h>
 #include "aux.h"
 #include "cmds.h"
@@ -8,24 +7,28 @@ int main (int argc, char *argv[]) {
   char *cmd;
   pid_t childpid;
   sigset_t mask, orig_mask;
+  char **myargv;
+  char delim[] = {" \t"};
 
   /* Signal install for Ctrl+C TODO switch with sigaction */
   signal(SIGINT, exitfunction);
   /* Using gnu history */
   using_history();
 
+  /* SOSH MAIN LOOP */
   while(TRUE) {      
     /* input function */
     cmd = soshReadline("> ");
-    
-    /* fork */
-    childpid = fork();
 
     /* blocking signals before executing children */
     if( (sigfillset(&mask) == -1)  || sigprocmask(SIG_SETMASK, &mask, &orig_mask) == -1 ) {
       perror("Failed to block the signal\n");
       return 1;
-    }
+    }    
+
+    /* Launches a child process for each command */
+    childpid = fork();
+
         
     /* fork error handling */
     if( childpid == -1 ) {
@@ -48,9 +51,15 @@ int main (int argc, char *argv[]) {
       else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
       /* "hist" process call */
       else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
-      else
-        printf("Comando não suportado\n");
-
+      else {
+        if (makeargv(cmd, delim, &myargv) == -1)
+          perror("Parent failed to create the argument array\n");
+        else {  
+          execvp(myargv[0], &myargv[0]);
+          printf("Comando não suportado\n");
+        }
+      }
+      
       return 1;
     }
     

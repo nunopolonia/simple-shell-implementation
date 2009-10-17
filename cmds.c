@@ -46,9 +46,10 @@ int cmd_ajuda() {
   fprintf(stdout,"Comandos suportados:\n");
   fprintf(stdout,"\tquem - mostra os utilizadores autenticados no sistema\n");
   fprintf(stdout,"\tpsu - lista os processos do utilizador actual\n");
+  fprintf(stdout,"\tlocaliza <cmd> - localiza os caminhos absolutos em que cmd aparece\n");
   fprintf(stdout,"\tver - indica a versão do sosh\n");
   fprintf(stdout,"\tajuda - disponibiliza esta ajuda\n");
-  fprintf(stdout,"\tlocaliza <cmd> - localiza os caminhos absolutos em que cmd aparece\n");
+  fprintf(stdout,"\thist - mostra a lista de comandos utilizados pelo utilizador\n");
   fprintf(stdout,"\texit - sai do sosh\n");
 
   return 0;
