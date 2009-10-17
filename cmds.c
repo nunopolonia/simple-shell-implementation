@@ -55,14 +55,13 @@ int cmd_ajuda() {
 }
 
 int cmd_hist() {
-  char **history;
+  HIST_ENTRY **history;
   int i;
-  
-  history = history_list();
-  
-  for (i = 0; i < sizeof(history); i++) {
-    printf("%d - %s\n", i+1,(char*)history[i]);
-  }
+
+  history = history_list ();
+  if (history)
+    for (i = 0; history_length; i++)
+      printf ("%d: %s\n", i + history_base, history[i]->line);
   
   return 0;
 }

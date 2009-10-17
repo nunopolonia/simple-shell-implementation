@@ -34,7 +34,7 @@ int main (int argc, char *argv[]) {
     }
     /* child code */
     if( childpid == 0 ) {
-      /* "quem" process call */
+       /* "quem" process call */
       if( strcmp(cmd, "quem") == 0 ) { cmd_quem(); }
       /* "psu" process call */
       else if( strcmp(cmd, "psu") == 0 ) { cmd_psu(); }
@@ -49,8 +49,8 @@ int main (int argc, char *argv[]) {
       /* "hist" process call */
       else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
       else
-          printf("Comando não suportado\n");
-      
+        printf("Comando não suportado\n");
+
       return 1;
     }
     
