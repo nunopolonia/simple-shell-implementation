@@ -14,8 +14,16 @@ int cmd_psu() {
   return 0;
 }
 
-int cmd_usrbin(char** argv, int argc) {
-  
+int cmd_usrbin(char** cmd) {
+  char **myargv;
+  char delim[] = {" \t"};
+
+  if (makeargv(cmd, delim, &myargv) == -1)
+    perror("Parent failed to create the argument array\n");
+  else {  
+    execvp(myargv[0], &myargv[0]);
+    printf("Comando não suportado\n");
+  }
   return 0;
 }
 

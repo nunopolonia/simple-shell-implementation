@@ -7,8 +7,7 @@ int main (int argc, char *argv[]) {
   char *cmd;
   pid_t childpid;
   sigset_t mask, orig_mask;
-  char **myargv;
-  char delim[] = {" \t"};
+  
 
   /* Signal install for Ctrl+C TODO switch with sigaction */
   signal(SIGINT, exitfunction);
@@ -51,14 +50,8 @@ int main (int argc, char *argv[]) {
       else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
       /* "hist" process call */
       else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
-      else {
-        if (makeargv(cmd, delim, &myargv) == -1)
-          perror("Parent failed to create the argument array\n");
-        else {  
-          execvp(myargv[0], &myargv[0]);
-          printf("Comando não suportado\n");
-        }
-      }
+      /* tries to run processes in /usr/bin folders */ 
+      else cmd_usrbin(cmd);
       
       return 1;
     }

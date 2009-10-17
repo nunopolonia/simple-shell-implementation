@@ -13,11 +13,13 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#include "aux.h"
+
 int cmd_quem();
 
 int cmd_psu();
 
-int cmd_usrbin(char** argv, int argc);
+int cmd_usrbin(char** cmd);
 
 int cmd_exit();
 
