@@ -1,4 +1,3 @@
-#include <sys/wait.h>
 #include "aux.h"
 #include "cmds.h"
 
@@ -45,7 +44,18 @@ int main (int argc, char *argv[]) {
       /* "ajuda" process call */
       else if( strcmp(cmd, "ajuda") == 0 ) { cmd_ajuda(); }
       /* "localiza" process call */
-      else if( strcmp(cmd, "localiza") == 0 ) { cmd_localiza(); }
+      else if( strcmp(cmd, "localiza") == 0 ) {
+        char **myargv;
+        char delim[] = {" \t"};
+        
+        /* If the buffer has already been allocated, return the memory to the free pool */
+        freemakeargv(myargv);
+
+        if (makeargv(cmd, delim, &myargv) == -1)
+          perror("Parent failed to create the argument array\n");
+        else
+          cmd_localiza(myargv);
+      }
       /* "exit" process call */
       else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
       /* "hist" process call */

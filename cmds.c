@@ -17,10 +17,16 @@ int cmd_psu() {
 int cmd_usrbin(char** cmd) {
   char **myargv;
   char delim[] = {" \t"};
-
+ 
+  /* If the buffer has already been allocated, return the memory to the free pool */
+  freemakeargv(myargv);
+ 
+  /* If makeargv is sucessful parsing the cmd string execute the program */
   if (makeargv(cmd, delim, &myargv) == -1)
     perror("Parent failed to create the argument array\n");
-  else {  
+  else { 
+  /* execvp completly substitutes the process in memory so the message is showed
+  ** if the execvp command fails meaning that we are still in the sosh process */  
     execvp(myargv[0], &myargv[0]);
     printf("Comando não suportado\n");
   }
@@ -38,7 +44,13 @@ int cmd_exit() {
   return 0;
 }
 
-int cmd_localiza() {
+int cmd_localiza(char** cmd) {
+
+  /* Open the current directory */
+    
+  /* Cycle through every file */
+    
+  /* If the file is a folder fork the process and repeat it */
   
   return 0;
 }

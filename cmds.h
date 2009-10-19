@@ -8,11 +8,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <sys/types.h>
 #include <signal.h>
+#include <time.h>
+#include <limits.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-
+ 
 #include "aux.h"
 
 int cmd_quem();
@@ -23,7 +28,7 @@ int cmd_usrbin(char** cmd);
 
 int cmd_exit();
 
-int cmd_localiza();
+int cmd_localiza(char** cmd);
 
 int cmd_ver();
 
