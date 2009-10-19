@@ -5,16 +5,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include <limits.h>
 #include <string.h>
 
-
-#define max_char 8192
 #define TRUE 1
 #define FALSE 0
 
-char *soshReadline(const char *prompt);
+char *soshreadline();
 
 void exitfunction();
 

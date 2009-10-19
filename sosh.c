@@ -14,9 +14,9 @@ int main (int argc, char *argv[]) {
   using_history();
 
   /* SOSH MAIN LOOP */
-  while(TRUE) {      
+  while(TRUE) {
     /* input function */
-    cmd = soshReadline("> ");
+    cmd = soshreadline();
 
     /* blocking signals before executing children */
     if( (sigfillset(&mask) == -1)  || sigprocmask(SIG_SETMASK, &mask, &orig_mask) == -1 ) {

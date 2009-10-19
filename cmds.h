@@ -10,13 +10,10 @@
 #include <stdio.h>
 #include <signal.h>
 #include <time.h>
-#include <limits.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+
  
 #include "aux.h"
 

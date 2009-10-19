@@ -3,13 +3,14 @@
 int cmd_quem() {
   /* who system call */
   system("who");
-
+  
   return 0;
 }
 
 int cmd_psu() {
   /* lists the user processes */
-  system("ps ux");
+  execl("/bin/ps", "ps", "ux", NULL);
+  perror("Child failed to exec ps"); 
   
   return 0;
 }
