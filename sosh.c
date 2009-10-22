@@ -3,20 +3,22 @@
 
 
 int main (int argc, char *argv[]) {
-  char *cmd;
+  char cmd[LINE_MAX] = "";
   pid_t childpid;
   sigset_t mask, orig_mask;
-  
+  struct sigaction act; 
 
   /* Signal install for Ctrl+C TODO switch with sigaction */
-  signal(SIGINT, exitfunction);
-  /* Using gnu history */
-  using_history();
+  act.sa_handler = exitfunction; 
+  act.sa_flags = 0; 
+  if ( (sigemptyset(&act.sa_mask) == -1) || (sigaction(SIGINT, &act, NULL) == -1) ) 
+   perror("Failed to set SIGINT to handle Ctrl-C"); 
 
   /* SOSH MAIN LOOP */
   while(TRUE) {
     /* input function */
-    cmd = soshreadline();
+    soshreadline(cmd);
+
 
     /* blocking signals before executing children */
     if( (sigfillset(&mask) == -1)  || sigprocmask(SIG_SETMASK, &mask, &orig_mask) == -1 ) {
@@ -26,7 +28,6 @@ int main (int argc, char *argv[]) {
 
     /* Launches a child process for each command */
     childpid = fork();
-
         
     /* fork error handling */
     if( childpid == -1 ) {
@@ -61,8 +62,9 @@ int main (int argc, char *argv[]) {
       /* "hist" process call */
       else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
       /* tries to run processes in /usr/bin folders */ 
-      else cmd_usrbin(cmd);
-      
+      else { 
+        cmd_usrbin(cmd);
+      }
       return 1;
     }
     

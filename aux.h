@@ -11,11 +11,11 @@
 #define TRUE 1
 #define FALSE 0
 
-char *soshreadline();
+void soshreadline(char *clean_line);
 
 void exitfunction();
 
-int makeargv(const char *s, const char *delimiters, char ***argvp);
+int makeargv(char *s, char *delimiters, char ***argvp);
 
 void freemakeargv(char **argv);
 

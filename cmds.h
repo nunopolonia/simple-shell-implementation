@@ -21,7 +21,7 @@ int cmd_quem();
 
 int cmd_psu();
 
-int cmd_usrbin(char** cmd);
+int cmd_usrbin(char* cmd);
 
 int cmd_exit();
 
@@ -31,6 +31,7 @@ int cmd_ver();
 
 int cmd_ajuda();
 
+/* TODO Remove GNU History */ 
 int cmd_hist();
 
 #endif /* __CMDS_H__ */

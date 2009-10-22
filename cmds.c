@@ -2,7 +2,8 @@
 
 int cmd_quem() {
   /* who system call */
-  system("who");
+  execl("/usr/bin/who", "who", NULL);
+  perror("Child failed to exec who"); 
   
   return 0;
 }
@@ -15,20 +16,21 @@ int cmd_psu() {
   return 0;
 }
 
-int cmd_usrbin(char** cmd) {
-  char **myargv;
+int cmd_usrbin(char* cmd) {
+  char ***binargv;
   char delim[] = {" \t"};
- 
+
   /* If the buffer has already been allocated, return the memory to the free pool */
-  freemakeargv(myargv);
- 
+  //freemakeargv(&binargv);
+
   /* If makeargv is sucessful parsing the cmd string execute the program */
-  if (makeargv(cmd, delim, &myargv) == -1)
+  if (makeargv(cmd, delim, binargv) == -1) {
     perror("Parent failed to create the argument array\n");
+  }
   else { 
   /* execvp completly substitutes the process in memory so the message is showed
   ** if the execvp command fails meaning that we are still in the sosh process */  
-    execvp(myargv[0], &myargv[0]);
+    execvp((*binargv)[0], *binargv);
     printf("Comando não suportado\n");
   }
   return 0;
@@ -47,8 +49,8 @@ int cmd_exit() {
 
 int cmd_localiza(char** cmd) {
 
-  /* Open the current directory */
-    
+  /* Open the root directory */
+  
   /* Cycle through every file */
     
   /* If the file is a folder fork the process and repeat it */
@@ -77,13 +79,6 @@ int cmd_ajuda() {
 }
 
 int cmd_hist() {
-  HIST_ENTRY **history;
-  int i;
 
-  history = history_list ();
-  if (history)
-    for (i = 0; history_length; i++)
-      printf ("%d: %s\n", i + history_base, history[i]->line);
-  
   return 0;
 }

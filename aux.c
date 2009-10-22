@@ -1,7 +1,7 @@
 #include "aux.h"
 
 void exitfunction() {
-  char question[] = "Deseja terminar o programa? (s/n)\n";
+  char question[] = "\nDeseja terminar o programa? (s/n)\n";
   int question_len = sizeof(question);
   char error[] = "Os parametros aceites são (s) ou (n)\n";
   int error_len = sizeof(error);
@@ -10,7 +10,7 @@ void exitfunction() {
   /* we are using the write funcion instead of printf because it isn't afected by signals */
   write(STDERR_FILENO, question, question_len);
   while(TRUE) {
-    answer = soshreadline();
+    soshreadline(answer);
     if( strcmp(answer,"s") == 0 ) {
       exit(0);
     }
@@ -23,21 +23,25 @@ void exitfunction() {
   }
 }
 
-char *soshreadline() {
-	char line[LINE_MAX] = "", clean_line[LINE_MAX] = "";
+void soshreadline(char *clean_line) {
+	char line[LINE_MAX] = "";
 	int line_size = 0;
-		
+	
+	/* cleans the buffer */
+  memset(clean_line, 0, LINE_MAX);
+  
 	printf("> ");
 	if( fgets(line, LINE_MAX, stdin) != NULL ) {
     line_size = strlen(line);
-    strncpy(clean_line, line, line_size-1);
+    strncpy(clean_line, line, line_size-1); 
+    printf("%s\n", clean_line); 
   }
 
-	return clean_line;
+	return;
 }
 
 /* Taken from Unix Systems Programming, Robbins & Robbins, p37 */
-int makeargv(const char *s, const char *delimiters, char ***argvp) {
+int makeargv(char *s, char *delimiters, char ***argvp) {
    int error;
    int i;
    int numtokens;
