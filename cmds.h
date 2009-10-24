@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
- 
 #include "aux.h"
 
 int cmd_quem();
@@ -30,8 +29,7 @@ int cmd_localiza(char** cmd);
 int cmd_ver();
 
 int cmd_ajuda();
-
-/* TODO Remove GNU History */ 
+ 
 int cmd_hist();
 
 #endif /* __CMDS_H__ */

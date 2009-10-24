@@ -1,12 +1,15 @@
-#include "aux.h"
 #include "cmds.h"
 
 
 int main (int argc, char *argv[]) {
+  /* main variables declarations */
   char cmd[LINE_MAX] = "";
   pid_t childpid;
   sigset_t mask, orig_mask;
-  struct sigaction act; 
+  struct sigaction act;
+  
+  /* initialization of the history list */
+  using_history(history_list);
 
   /* Signal install for Ctrl+C TODO switch with sigaction */
   act.sa_handler = exitfunction; 
@@ -45,26 +48,14 @@ int main (int argc, char *argv[]) {
       /* "ajuda" process call */
       else if( strcmp(cmd, "ajuda") == 0 ) { cmd_ajuda(); }
       /* "localiza" process call */
-      else if( strcmp(cmd, "localiza") == 0 ) {
-        char **myargv;
-        char delim[] = {" \t"};
-        
-        /* If the buffer has already been allocated, return the memory to the free pool */
-        freemakeargv(myargv);
-
-        if (makeargv(cmd, delim, &myargv) == -1)
-          perror("Parent failed to create the argument array\n");
-        else
-          cmd_localiza(myargv);
-      }
+      else if( strcmp(cmd, "localiza") == 0 ) { }
       /* "exit" process call */
       else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
       /* "hist" process call */
       else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
       /* tries to run processes in /usr/bin folders */ 
-      else { 
-        cmd_usrbin(cmd);
-      }
+      else { cmd_usrbin(cmd); }
+      
       return 1;
     }
     

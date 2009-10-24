@@ -8,6 +8,9 @@
 #include <limits.h>
 #include <string.h>
 
+#include "history.h"
+
+
 #define TRUE 1
 #define FALSE 0
 
@@ -18,7 +21,6 @@ void exitfunction();
 int makeargv(char *s, char *delimiters, char ***argvp);
 
 void freemakeargv(char **argv);
-
 
 #endif /* __AUX_H__ */
 

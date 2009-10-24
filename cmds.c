@@ -30,6 +30,7 @@ int cmd_usrbin(char* cmd) {
   else { 
   /* execvp completly substitutes the process in memory so the message is showed
   ** if the execvp command fails meaning that we are still in the sosh process */  
+    printf("%s\n", (*binargv)[0]);
     execvp((*binargv)[0], *binargv);
     printf("Comando não suportado\n");
   }
@@ -37,6 +38,9 @@ int cmd_usrbin(char* cmd) {
 }
 
 int cmd_exit() {
+  
+  history_destroy(history_list);
+     
   /* kills the parent process TODO switch to SIGUSR1 */
   if (kill(getppid(), SIGTERM) == -1)
     perror ("Failed to kill parent");
@@ -79,6 +83,8 @@ int cmd_ajuda() {
 }
 
 int cmd_hist() {
-
+  
+  history_print(history_list);
+  
   return 0;
 }

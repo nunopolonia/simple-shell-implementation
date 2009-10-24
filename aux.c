@@ -12,6 +12,8 @@ void exitfunction() {
   while(TRUE) {
     soshreadline(answer);
     if( strcmp(answer,"s") == 0 ) {
+      /* destroys the space ocuppied by history list from memory */
+      history_destroy(history_list);
       exit(0);
     }
     else if( strcmp(answer,"n") == 0 ) {
@@ -21,20 +23,25 @@ void exitfunction() {
       write(STDERR_FILENO, error, error_len);
       continue;
   }
+  
+  return;
 }
 
+/* sosh readline function */
 void soshreadline(char *clean_line) {
 	char line[LINE_MAX] = "";
 	int line_size = 0;
 	
-	/* cleans the buffer */
+	/* cleans the input buffer */
   memset(clean_line, 0, LINE_MAX);
   
 	printf("> ");
 	if( fgets(line, LINE_MAX, stdin) != NULL ) {
     line_size = strlen(line);
     strncpy(clean_line, line, line_size-1); 
-    printf("%s\n", clean_line); 
+
+    /* adds the entry to history */
+    history_add(clean_line);
   }
 
 	return;
