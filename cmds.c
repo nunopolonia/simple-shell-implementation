@@ -27,7 +27,7 @@ int cmd_usrbin(char* cmd) {
   /* execvp completly substitutes the process in memory so the message is showed
   ** if the execvp command fails meaning that we are still in the sosh process */  
     execvp(myargv[0], myargv);  
-    printf("Command not found\n");
+    printf("sosh: Command not found\n");
   }
   
   return 0;
