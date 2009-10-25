@@ -5,7 +5,7 @@ void exitfunction() {
   int question_len = sizeof(question);
   char error[] = "Os parametros aceites são (s) ou (n)\n";
   int error_len = sizeof(error);
-  char *answer;
+  char *answer = "NULL";
   
   /* we are using the write funcion instead of printf because it isn't afected by signals */
   write(STDERR_FILENO, question, question_len);

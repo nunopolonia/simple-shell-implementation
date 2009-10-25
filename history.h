@@ -5,6 +5,7 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /* history_item - each element of the history points to the next element */
 typedef struct history_item {
@@ -16,7 +17,6 @@ typedef struct history_item {
 typedef struct {
    history_item_t *first;
    history_item_t *last;
-   int elems;
 } history_t;
 
 /* declaration of global scoped list of commands entered */

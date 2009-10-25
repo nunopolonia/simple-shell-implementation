@@ -22,15 +22,17 @@ void history_destroy(history_t *history) {
 
 void history_add(char *string) {
    history_item_t *new = NULL, *previous_last = NULL;
+   char *new_string;
    
    new = (history_item_t*) malloc(sizeof(history_item_t));
-   new->string = string;
+   new_string = malloc(sizeof(char)*(strlen(string)+1));
+   strcpy(new_string, string);
+   new->string = new_string;
    new->next = NULL;
    
    if(history_list->last != NULL) {
     previous_last = history_list->last;
     previous_last->next = new;
-    history_list->last = NULL;
     history_list->last = new;
    } else {
     history_list->first = new;
