@@ -17,23 +17,23 @@ int cmd_psu() {
 }
 
 int cmd_usrbin(char* cmd) {
-  char ***binargv;
-  char delim[] = {" \t"};
+  char **myargv;
+  char delim[] = {" \t\n"};
 
   /* If the buffer has already been allocated, return the memory to the free pool */
-  //freemakeargv(&binargv);
-
+  //freemakeargv(binargvp);
+ 
   /* If makeargv is sucessful parsing the cmd string execute the program */
-  if (makeargv(cmd, delim, binargv) == -1) {
+
+  if ( makeargv(cmd, delim, &myargv) == -1) {
     perror("Parent failed to create the argument array\n");
-  }
-  else { 
+  } else {
   /* execvp completly substitutes the process in memory so the message is showed
   ** if the execvp command fails meaning that we are still in the sosh process */  
-    printf("%s\n", (*binargv)[0]);
-    execvp((*binargv)[0], *binargv);
+    execvp(myargv[0], myargv);  
     printf("Comando não suportado\n");
   }
+  
   return 0;
 }
 

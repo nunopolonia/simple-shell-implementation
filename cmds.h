@@ -20,7 +20,7 @@ int cmd_quem();
 
 int cmd_psu();
 
-int cmd_usrbin(char* cmd);
+int cmd_usrbin(char *cmd);
 
 int cmd_exit();
 
