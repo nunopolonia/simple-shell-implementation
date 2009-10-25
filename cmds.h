@@ -24,7 +24,7 @@ int cmd_usrbin(char *cmd);
 
 int cmd_exit();
 
-int cmd_localiza(char** cmd);
+int cmd_localiza(char* cmd);
 
 int cmd_ver();
 
