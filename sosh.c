@@ -11,7 +11,7 @@ int main (int argc, char *argv[]) {
   /* initialization of the history list */
   using_history(history_list);
 
-  /* Signal install for Ctrl+C TODO switch with sigaction */
+  /* Signal install for Ctrl+C */
   act.sa_handler = exitfunction; 
   act.sa_flags = 0; 
   if ( (sigemptyset(&act.sa_mask) == -1) || (sigaction(SIGINT, &act, NULL) == -1) ) 

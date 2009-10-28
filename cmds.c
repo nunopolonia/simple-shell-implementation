@@ -91,23 +91,25 @@ int cmd_search_hist(char *cmd) {
   command = history_search(cmd);
   
   if(command != NULL) {
-      history_add(command);
-      /* "quem" process call */
-      if( strcmp(command, "quem") == 0 ) { cmd_quem(); }
-      /* "psu" process call */
-      else if( strcmp(command, "psu") == 0 ) { cmd_psu(); }
-      /* "ver" process call */
-      else if( strcmp(command, "ver") == 0 ) { cmd_ver(); }
-      /* "ajuda" process call */
-      else if( strcmp(command, "ajuda") == 0 ) { cmd_ajuda(); }
-      /* "localiza" process call */
-      else if( strcmp(command, "localiza") == 0 ) { }
-      /* "exit" process call */
-      else if( strcmp(command, "exit") == 0 ) { cmd_exit(); }
-      /* "hist" process call */
-      else if( strcmp(command, "hist") == 0 ) { cmd_hist(); }
-      /* search the history for the last command starting with string */
-      else { cmd_usrbin(command); }
+    /* TODO add the found command to history */
+    history_add(command);
+
+    /* "quem" process call */
+    if( strcmp(command, "quem") == 0 ) { cmd_quem(); }
+    /* "psu" process call */
+    else if( strcmp(command, "psu") == 0 ) { cmd_psu(); }
+    /* "ver" process call */
+    else if( strcmp(command, "ver") == 0 ) { cmd_ver(); }
+    /* "ajuda" process call */
+    else if( strcmp(command, "ajuda") == 0 ) { cmd_ajuda(); }
+    /* "localiza" process call */
+    else if( strcmp(command, "localiza") == 0 ) { }
+    /* "exit" process call */
+    else if( strcmp(command, "exit") == 0 ) { cmd_exit(); }
+    /* "hist" process call */
+    else if( strcmp(command, "hist") == 0 ) { cmd_hist(); }
+    /* search the history for the last command starting with string */
+    else { cmd_usrbin(command); }
   } else {
     printf("Command not found in history\n");
   }

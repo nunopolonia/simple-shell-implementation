@@ -24,19 +24,24 @@ void history_add(char *string) {
    history_item_t *new = NULL, *previous_last = NULL;
    char *new_string;
    
+   /* since we're using a single memory block for every command, we have to create space in
+   ** memory for each command in history or else they would all point to the last command */
    new = (history_item_t*) malloc(sizeof(history_item_t));
    new_string = malloc(sizeof(char)*(strlen(string)+1));
    strcpy(new_string, string);
    
+   /* initialization of the new item structure */
    new->string = new_string;
    new->next = NULL;
    new->previous = NULL;
    
+   /* if the list is not empty */
    if(history_list->last != NULL) {
     previous_last = history_list->last;
     previous_last->next = new;
     new->previous = previous_last;
     history_list->last = new;
+   /* if the command is the first inserted */
    } else {
     history_list->first = new;
     history_list->last = new;
@@ -59,12 +64,12 @@ void history_print() {
 }
 
 char *history_search(char *cmd) {
-  /* pointing to the previous to the last entry because the last entry is !string */
-  history_item_t *current = history_list->last->previous;
+  history_item_t *current = history_list->last;
   char *search_string = NULL;
   
   /* remove the ! from the beginning of the sentence */
   search_string = strtok(cmd, "!");
+  
   /* search the history backwards */
   while (current != NULL) {
      if( strstr(current->string, search_string) != NULL )
