@@ -12,6 +12,7 @@
 
 #include "aux.h"
 
+
 int cmd_quem();
 
 int cmd_psu();
@@ -27,6 +28,8 @@ int cmd_ver();
 int cmd_ajuda();
  
 int cmd_hist();
+
+int cmd_search_hist(char *cmd);
 
 #endif /* __CMDS_H__ */
 

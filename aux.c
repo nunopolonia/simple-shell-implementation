@@ -1,5 +1,25 @@
 #include "aux.h"
 
+/* sosh readline function */
+void soshreadline(char *clean_line) {
+	char line[LINE_MAX] = "";
+	int line_size = 0;
+	
+	/* cleans the input buffer */
+  memset(clean_line, 0, LINE_MAX);
+  
+	printf("> ");
+	if( fgets(line, LINE_MAX, stdin) != NULL ) {
+    line_size = strlen(line);
+    strncpy(clean_line, line, line_size-1); 
+
+    /* adds the entry to history */
+    history_add(clean_line);
+  }
+
+	return;
+}
+
 void exitfunction() {
   char question[] = "\nDeseja terminar o programa? (s/n)\n";
   int question_len = sizeof(question);
@@ -25,26 +45,6 @@ void exitfunction() {
   }
   
   return;
-}
-
-/* sosh readline function */
-void soshreadline(char *clean_line) {
-	char line[LINE_MAX] = "";
-	int line_size = 0;
-	
-	/* cleans the input buffer */
-  memset(clean_line, 0, LINE_MAX);
-  
-	printf("> ");
-	if( fgets(line, LINE_MAX, stdin) != NULL ) {
-    line_size = strlen(line);
-    strncpy(clean_line, line, line_size-1); 
-
-    /* adds the entry to history */
-    history_add(clean_line);
-  }
-
-	return;
 }
 
 /* Taken from Unix Systems Programming, Robbins & Robbins, p37 */

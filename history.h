@@ -10,6 +10,7 @@
 /* history_item - each element of the history points to the next element */
 typedef struct history_item {
    char *string;
+   struct history_item *previous;
    struct history_item *next;
 } history_item_t;
 
@@ -33,3 +34,6 @@ void history_add(char* string);
 
 /* history_print - print the content of history 'history' to standard output */
 void history_print();
+
+/* history_search - searches the 'history' backwards to find a command previously
+** entered that matches the given string */char *history_search(char *cmd);
