@@ -54,8 +54,6 @@ int main (int argc, char *argv[]) {
       /* "hist" process call */
       else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
       /* search the history for the last command starting with string */
-      else if( strncmp(cmd, "!", 1) == 0 ) { cmd_search_hist(cmd); }
-      /* tries to run processes in /usr/bin folders */ 
       else { cmd_usrbin(cmd); }
       
       return 1;

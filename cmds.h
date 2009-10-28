@@ -29,7 +29,5 @@ int cmd_ajuda();
  
 int cmd_hist();
 
-int cmd_search_hist(char *cmd);
-
 #endif /* __CMDS_H__ */
 

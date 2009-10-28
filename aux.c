@@ -4,6 +4,7 @@
 void soshreadline(char *clean_line) {
 	char line[LINE_MAX] = "";
 	int line_size = 0;
+	char *command = NULL;
 	
 	/* cleans the input buffer */
   memset(clean_line, 0, LINE_MAX);
@@ -13,9 +14,26 @@ void soshreadline(char *clean_line) {
     line_size = strlen(line);
     strncpy(clean_line, line, line_size-1); 
 
-    /* adds the entry to history except if it's a search (starts with !) */
+    /* adds the new command to history except if it's a search */
     if(strncmp(clean_line, "!", 1) != 0)
       history_add(clean_line);
+    else {
+      /* if it's a search, finds the last command sends it to processing
+      ** instead of the line received in the stdin */
+      command = history_search(clean_line);
+      
+      /* if a command was found that satisfies the search */
+      if(command != NULL) {
+        history_add(command);
+        printf("command found: %s\n", command);
+        /* clears the memory block used to received every command,
+        ** we pass that command for parsing */
+        memset(clean_line, 0, LINE_MAX);
+        line_size = strlen(command);
+        strncpy(clean_line, command, line_size);
+      } else
+        printf("Command not found in history\n");
+    }    
   }
 
 	return;
@@ -31,10 +49,11 @@ void exitfunction() {
   /* we are using the write funcion instead of printf because it isn't afected by signals */
   write(STDERR_FILENO, question, question_len);
   while(TRUE) {
+    printf("> ");
+    /* TODO catch bad input with more than one letter */
     input = fgetc(stdin);
     /* catches the newline caracter in the end of the input */
     getchar();
-    /*TODO switch to sscanf */
     
     if( input == 's' ) {
       /* destroys the space ocuppied by history list from memory */
