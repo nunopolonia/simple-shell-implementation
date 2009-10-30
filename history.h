@@ -3,9 +3,7 @@
  * based on a integer list given by Prof. Rui Maranhão in
  * http://web.fe.up.pt/~rma/SOPE/tp/tp1/aula1.tgz
  */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "definitions.h"
 
 /* history_item - each element of the history points to the next element */
 typedef struct history_item {

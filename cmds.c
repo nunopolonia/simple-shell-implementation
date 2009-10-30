@@ -36,24 +36,13 @@ int cmd_usrbin(char* cmd) {
 int cmd_exit() {
   
   history_destroy(history_list);
-     
+       
   /* kills the parent process TODO switch to SIGUSR1 */
   if (kill(getppid(), SIGTERM) == -1)
     perror ("Failed to kill parent");
   /* guarantees that there's no zombie processes */
   if (raise(SIGTERM) != 0)
     perror("Failed to kill self"); 
-  
-  return 0;
-}
-
-int cmd_localiza(char* cmd) {
-
-  /* Open the root directory */
-  
-  /* Cycle through every file */
-    
-  /* If the file is a folder fork the process and repeat it */
   
   return 0;
 }
@@ -84,3 +73,18 @@ int cmd_hist() {
   
   return 0;
 }
+
+
+int cmd_localiza(char* cmd) {
+  char *init_path = "/home/polonia";
+  char search_string[MAX_CANON];
+
+  /* Returns search string without "localiza " */
+  strcpy(search_string, cmd+9);
+
+  /* makes a depth-first search starting at "init_path" searching for search_string */
+  depthsearch(init_path, search_string);
+
+  return 0;
+}
+

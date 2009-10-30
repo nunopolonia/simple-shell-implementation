@@ -1,9 +1,8 @@
 #include "cmds.h"
 
-
 int main (int argc, char *argv[]) {
   /* main variables declarations */
-  char cmd[LINE_MAX] = "";
+  char cmd[MAX_CANON] = "";
   pid_t childpid;
   sigset_t mask, orig_mask;
   struct sigaction act;
@@ -48,7 +47,7 @@ int main (int argc, char *argv[]) {
       /* "ajuda" process call */
       else if( strcmp(cmd, "ajuda") == 0 ) { cmd_ajuda(); }
       /* "localiza" process call */
-      else if( strcmp(cmd, "localiza") == 0 ) { }
+      else if( strncmp(cmd, "localiza", 8) == 0 ) { cmd_localiza(cmd); }
       /* "exit" process call */
       else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
       /* "hist" process call */

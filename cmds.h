@@ -1,17 +1,10 @@
 /*
- * cmds - sosh command module
+** cmds - sosh command module
 */
 #ifndef __CMDS_H__
 #define __CMDS_H__
 
-#include <signal.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-
 #include "aux.h"
-
 
 int cmd_quem();
 

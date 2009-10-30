@@ -2,15 +2,15 @@
 
 /* sosh readline function */
 void soshreadline(char *clean_line) {
-	char line[LINE_MAX] = "";
+	char line[MAX_CANON] = "";
 	int line_size = 0;
 	char *command = NULL;
 	
 	/* cleans the input buffer */
-  memset(clean_line, 0, LINE_MAX);
+  memset(clean_line, 0, MAX_CANON);
   
 	printf("> ");
-	if( fgets(line, LINE_MAX, stdin) != NULL ) {
+	if( fgets(line, MAX_CANON, stdin) != NULL ) {
     line_size = strlen(line);
     strncpy(clean_line, line, line_size-1); 
 
@@ -28,7 +28,7 @@ void soshreadline(char *clean_line) {
         printf("command found: %s\n", command);
         /* clears the memory block used to received every command,
         ** we pass that command for parsing */
-        memset(clean_line, 0, LINE_MAX);
+        memset(clean_line, 0, MAX_CANON);
         line_size = strlen(command);
         strncpy(clean_line, command, line_size);
       } else
@@ -118,6 +118,46 @@ void freemakeargv(char **argv) {
    if (*argv != NULL)
       free(*argv);
    free(argv);
+}
+
+void depthsearch(char *path, char *search_string) {
+  struct dirent *direntp;
+  struct stat statbuf;
+  char mycwd[PATH_MAX];
+  DIR *dirp;
+
+  if( chdir(path) == -1 )
+    perror("Failed to change working directory directory");
+  
+  /* path fetching error handling */
+  if( getcwd(mycwd, PATH_MAX) == NULL ) {
+    perror("Failed to get current working directory");
+    return;
+  }
+  
+  /* open the init_path directory */
+  if( (dirp = opendir(path) ) == NULL ) {
+    perror("Failed to open directory");
+    return;
+  }
+  
+    while( ( direntp = readdir(dirp) ) != NULL ) {
+    /* File status error handling */
+    if(stat(direntp->d_name, &statbuf) == -1 )
+      perror("Failed to get file status");
+    else {
+      if(strstr(direntp->d_name,search_string) != NULL ){
+        /* if its a dir print all the tree below */
+        //print_tree_below(char* path);
+        /* if its a file print it */
+        printf("%s/%s\n", mycwd, direntp->d_name);
+      }
+      /* else if its a directory fork and run this again */
+    }    
+  }
+  /* close init_path directory */
+  while( (closedir(dirp) == -1) && (errno == EINTR) );
+
 }
 
 
