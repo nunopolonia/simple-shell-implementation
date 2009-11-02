@@ -13,5 +13,7 @@ void freemakeargv(char **argv);
 
 void depthsearch(char *path, char *search_string);
 
+void print_tree_below(char *path);
+
 #endif /* __AUX_H__ */
 

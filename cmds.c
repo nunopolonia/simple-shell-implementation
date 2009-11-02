@@ -76,7 +76,7 @@ int cmd_hist() {
 
 
 int cmd_localiza(char* cmd) {
-  char *init_path = "/home/polonia";
+  char *init_path = "/home/nunopolonia/work/inqueritos";
   char search_string[MAX_CANON];
 
   /* Returns search string without "localiza " */

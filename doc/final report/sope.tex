@@ -1,0 +1,354 @@
+% compilar com pdflatex
+\documentclass[a4paper,12pt]{report}
+\usepackage[latin1]{inputenc}
+\usepackage[portuges]{babel}
+\usepackage[pdftex]{graphicx}
+\usepackage{indentfirst}
+
+% PDF Hyperlinks
+\usepackage{hyperref}
+\usepackage{color}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.3}
+\hypersetup{colorlinks,breaklinks,
+			linkcolor=darkblue,urlcolor=darkblue,
+			anchorcolor=darkblue,citecolor=darkblue}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+\begin{center}
+
+\textsc{
+Mestrado Integrado em \\Engenharia Informática e Computação\\
+\ \\ % força linha em branco
+\Large Agentes e Inteligência Artificial Distribuída\\
+\small EIC0033\\
+}
+\vfill
+
+\textsc{
+\LARGE Relatório Final - Simulação de Vida Artificial num Ecossistema\\
+\large \textit{Tuning Growth Stability in an Animat Agent Model}\\
+}
+\vfill
+Hugo Norberto Jesus Meira, ei05019\\
+João Gradim Pereira, ei05030\\
+João Vitor Barros Monteiro Dias, ei05036\\
+\vfill
+
+\includegraphics[width=40mm]{image/feup}\\
+\small
+Faculdade de Engenharia da Universidade do Porto\\
+Rua Dr. Roberto Frias, s/n,\\ 4200-465 Porto, Portugal
+\vspace{5mm}
+
+Porto, 17 de Dezembro de 2008
+
+\end{center}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{abstract}
+Este relatório é o complemento do culminar do projecto realizado durante o semestre no âmbito da disciplina de Agentes e Inteligência Artificial Distribuída. Aqui serão apresentados os resultados e documentados todos os pontos necessários para a compreensão do programa desenvolvido, programa esse que visa o estudo e aplicação de agentes com inteligência artificial inerente, tendo por base a simulação de um ecossistema regulado pelo modelo predador-presa.
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\listoffigures
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Objectivo}
+Um ecossistema é o conjunto de todos os factores bióticos e abióticos que actuam sobre uma determinada região. A simulação de um ecossistema orientado pelo modelo predador-presa foi o ambiente escolhido para estudar a aplicação de agentes com inteligência artificial. Neste ecossistema estão aplicadas algumas regras, regras essas que o fazem variar de diversas formas. Estas regras estão agrupadas em dois grupos distintos, sendo que um corresponde às presas e o outro aos predadores. Todos os agentes obedecem a estas regras, criando assim um ambiente semelhante ao real.\par
+O objectivo deste projecto é conseguir replicar este ecossistema em ambiente virtual e através desta simulação, e da criação de todos os agentes necessários à mesma, efectuar o estudo de agentes e inteligência artificial que esta disciplina exige.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Descrição}
+
+\section{O Ecossistema}
+
+\subsection{Modelo de Simulação}
+No ecossistema a simular encontram-se dois tipos distintos de agentes, predadores e presas, excluindo o agente mundo. Os predadores serão representados por raposas e as presas por coelhos. Existirão várias populações de coelhos com genomas distintos e raposas dispersas. As raposas caçam os coelhos para sobreviver e pressupõe-se que existe sempre comida para todos os coelhos. Esta simulação é realizada com todos os parâmetros concordantes com o artigo \textit{Growth Stability in an Animat Agent Model}\cite{animat}.
+
+\subsection{Regras}
+De maneira a simular um ecossistema real foi construído, no artigo referido anteriormente, um conjunto de regras, divididas em dois grupos, um a aplicar a predadores e outro a aplicar a presas, que representam, individualmente, as acções possíveis para cada agente. 
+
+\begin{itemize}
+	\item Conjunto de regras dos predadores (raposas):
+		\begin{enumerate}
+			\item Comer um coelho se este estiver adjacente.
+			\item Mover-se para junto de um coelho se estiver com fome.
+			\item Reproduzir se não estiver com fome e se estiver adjacente a outra raposa.
+			\item Mover-se para junto de outra raposa se não estiver com fome.
+			\item Mover-se aleatoriamente 50\% das vezes.
+			\item Não fazer nada.
+		\end{enumerate}
+	\item Conjunto de regras das presas (coelhos):
+		\begin{enumerate}
+			\item Mover-se para longe de uma raposa adjacente.
+			\item Mover-se para longe de um coelho adjacente se estiver com fome.
+			\item Reproduzir se não estiver com fome e se estiver adjacente a outro coelho.
+			\item Mover-se para junto de outro coelho se não estiver com fome.
+			\item Mover-se aleatoriamente 50\% das vezes.
+		\item Não fazer nada.
+		\end{enumerate}	
+\end{itemize}
+
+A enumeração dos dois conjuntos de regras é feita de modo prioritizado, sendo a primeira regra de cada um dos grupos a de maior prioridade e a última a de menor, sendo que a última regra é comum e adiciona a possibilidade de um agente não realizar qualquer regra numa dada iteração. A cada iteração da simulação é apenas efectuada por cada agente. Se um determinado agente executar a primeira regra não executará mais nenhuma até à próxima iteração.\par
+Para executar uma qualquer regra um agente tem de satisfazer as condições que a regra impõe. Caso não sejam cumpridas essas condições, tentam-se cumprir as condições da próxima regra com maior prioridade. Essas regras podem variar mediante três factores: a fome, as populações iniciais e a reprodução.
+
+\subsubsection{Mutações genéticas nos coelhos}
+
+A lista apresentada anteriormente com a ordem de execução das regras dos coelhos é a ordem considerada óptima para a sua sobrevivência. Foi, no entanto, implementado um mecanismo de mutação que, baseado numa \textit{seed} gera diferentes combinações destas regras, introduzindo um maior realismo ao modelo apresentado.
+
+\subsubsection{Fome}
+À semelhança da vida real, também na simulação temos o factor da fome. Nesta simulação, a fome é representada por um inteiro em cada agente que indica o valor da mesma para cada um. De cada vez que um agente come o valor desse inteiro toma automaticamente o valor máximo e a cada iteração em que o agente não coma o mesmo valor vai ser decrementado. Considera-se que um agente tem fome apartir do momento em que o valor é inferior a um terço do valor máximo, e se o valor atingir zero o agente morre.\par
+No caso dos predadores, as raposas, uma vez que está explícito nas suas regras a acção comer, apenas nas iterações em que esta regra é executada, se verifica a tomada de valor máximo por parte do inteiro correspondente ao factor fome em cada um. Por outro lado, as presas, os coelhos, assume-se que comem em todas a iterações, desde que não teham nenhum outro coelho adjacente.
+
+\subsubsection{Populações Iniciais}
+As populações iniciais de cada tipo de agente podem ser definidas na interface do programa antes de se dar início à simulação. Desta forma é possível, com diferentes valores introduzidos, obter cenários distintos de simulação. Segundo o artigo que serve de modelo a este programa as populações iniciais deveriam ser de 2240 coelhos divididos em tribos de 19 coelhos e de 820 raposas. No entanto um número tão elevado de agentes preenche completamente e num curto espaço de tempo a memória disponível. Devido a isto o número atribuído às populações iniciais é inferior ao referido no artigo, podendo ser escolhido antes de se dar início à simulação.
+
+\subsubsection{Reprodução}
+Tal como na vida real, também na simulação a reprodução dá frutos. De cada vez que uma regra relativa a reprodução seja executada é criado um novo agente com o genoma dos progenitores, no caso das raposas. Se for executada uma regra de reprodução relativa a coelhos o agente gerado tem 50\% de probabilidade de herdar o genoma da mãe e 50\% de probabilidade de herdar o genoma do pai.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Funcionalidades}
+
+A interface desenvolvida é bastante simples, mas no entanto contém todas as funcionalidades e, mais importante, todas as informações necessárias. É constituída por uma simples janela com 3 separadores e um painel lateral de comandos, onde são introduzidos os dados necessários à simulação e onde se encontram as opções de visualização.
+
+\subsection{Simulação}
+Neste separador está representado o mundo, isto é, a área de acção de todos os agentes. A área de acção é representada por uma área quadrangular verde, redimensionável. Os agentes correspondentes a predadores estão representados por pontos negros, e todos os outros agentes, pertencentes às várias tribos de coelhos, estão representados por cores diversas, cada tribo com uma cor única para os seus elementos (ver secções \ref{fig:exec1}, \ref{fig:exec2}, \ref{fig:exec3})
+
+\subsection{Estatísticas de População}
+Para este separador foi utilizada uma framework chamada \textit{jFreeChart}. Aqui é apresentada a evolução das populações de predadores e presas, num gráfico que evolui a cada iteração. Neste gráfico as raposas estão representadas pela cor azul e os coelhos pela cor vermelha (ver secção \ref{fig:exec4}).
+
+\subsection{Execução de Regras}
+Uma vez que são executadas várias regras durante toda a simulação, neste separador estão listadas as regras que são executadas com mais frequência (ver secção \ref{fig:exec5}).
+
+\subsection{Painel de Comandos}
+Neste painel estão as informações iniciais e essenciais à execução do programa, bem como algumas opções. Neste painel introduzem-se o número inicial de ambas as populações bem como o número de tribos de coelhos que se pretende. Existe também a opção de apresentar uma grelha por cima do \textit{mundo} do separador de simulação. Temos também as opção de redimensionamento da janela da interface, bem como os botões que iniciam e param a simulação.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Estrutura do Programa}
+
+Este projecto está dividido em três \textit{packages} distintas: \textit{agents}, \textit{app} e \textit{gui}. A primeira é responsável pela implementação dos agentes \textit{World}, \textit{Animal}, \textit{Rabbit} e \textit{Fox}. A segunda é o gestor da simulação responsável pelo controlo da aplicação (criação do Runtime do JADE, Gráficos e função Main) e a terceira responsável pela interface fornecida ao utilizador para interagir com o programa.
+
+\subsection{agents}
+Contendo 4 ficheiros, é através desta \textit{package} que são criados os três tipos de agentes que a aplicação necessita para proceder à simulação. Um dos ficheiros está unicamente dedicado ao agente \textit{World}, sendo que outros dois naturalmente se direccionam às especificações dos outros dois tipos de agentes, os predadores e as presas. O quarto ficheiro corresponde à class \textit{Animal} que corresponde à superclasses das classes presentes nos dois ficheiros referidos imediatamente antes deste e que contém as funções comuns aos dois tipos de agentes que interagem com o agente \textit{World}.
+
+\subsection{app}
+Aqui estão contidas as classes necessárias para a correcta inicialização da plataforma JADE e da interface gráfica. Contém igualmente uma classe responsável pela criação dos gráficos representativos dos dados estatísticos: número de agentes criados ao longo da simlução e execução de cada uma das regras, quer pelos agentes \textit{Fox} como pelos agentes \textit{Rabbit}.
+
+\subsection{gui}
+Contendo apenas dois ficheiros, esta \textit{package} está responsável pelo desenho da interface com a qual o utilizador interage (gui.MainWindow), bem como do mapa representativo da simulação (gui.SimulationMap). Recorre no entanto às funcionalidades da framework jFreeChart (classe app.ChartManager) para as representações estatísticas.
+
+\subsection{Módulos}
+É então possível afirmar que este programa está dividido em três módulos distintos.\par
+O módulo de controlo dá início à execução do programa, e para tal recorre ao módulo de interface, apresentando a mesma no ecrã. É então requerido que o utilizador introduza os dados necessários para a execução da simulação. Caso não sejam introduzidos valores para as variáveis da simulação serão utilizados os valores por defeito.\par
+Dá-se início à simulação. Durante a simulação o motor de controlo vai actualizando a interface com chamadas ao módulo não só de interface mas também de agentes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Esquemas de Representação de Conhecimento e Metodologia}
+
+\subsection{Mensagens}
+
+Para a comunicação entre os agentes são usados diversas mensagens, usando apenas dois tipos de \textit{message performatives}:
+\begin{itemize}
+	\item INFORM
+	\begin{itemize}
+		\item	 MSG\_NEW\_POSITION: Informa o \textit{World} da nova posição do agente
+		\item MSG\_DEATH: Informa o \textit{World} da terminação de um agente
+		\item MSG\_BIRTH: Informa o \textit{World} da criação de um agente
+	\end{itemize}
+	\item REQUEST
+	\begin{itemize}
+		\item MSG\_NEAREST\_RABBIT: Pede ao \textit{World} um coelho próximo (dez unidades de distância ou menos)
+		\item MSG\_NEAREST\_FOX: Pede ao \textit{World} uma raposa próxima (dez unidades de distância ou menos)
+		\item MSG\_ADJACENT\_RABBIT: Pede ao \textit{World} um coelho adjacente (cinco unidades de distância ou menos)
+		\item MSG\_ADJACENT\_FOX: Pede ao \textit{World} uma raposa adjacente (cinco unidades de distância ou menos)
+	\end{itemize}
+\end{itemize}
+
+\newpage
+\subsubsection{Estrutura das mensagens}
+
+Todas as mensagens enviadas pelos agentes \textit{Rabbit} ou \textit{Fox} a \textit{World} contêm a mesma estrutura básica: uma \textit{string} identificadora da operação a efectuar, seguida dos argumentos necessários, separados por um \textit{pipe} (|).
+
+Todas as mensages de resposta de \textit{World} aos pedidos (\textit{message performative} = REQUEST) efectuados contêm a mesma estrutura: o nome do agente encontrado, a diferença entre as coordenadas dos dois agentes e as coordenadas do agente encontrado.
+
+Mensagens enviadas por \textit{Fox} e \textit{Rabbit}:\\
+\begin{itemize}
+	\item INFORM
+	\begin{itemize}
+		\item	 MSG\_NEW\_POSITION: \verb!"position|x,y|new_,new_y"!
+		\item MSG\_DEATH: \verb!"death|agentName|x,y"!
+		\item MSG\_BIRTH: \verb!"birth"!
+	\end{itemize}
+	\item REQUEST
+	\begin{itemize}
+		\item MSG\_NEAREST\_RABBIT: \verb!"nearest_rabbit|x,y"!
+		\item MSG\_NEAREST\_FOX: \verb!"nearest_fox|x,y"!
+		\item MSG\_ADJACENT\_RABBIT: \verb!"adjacent_rabbit|x,y"!
+		\item MSG\_ADJACENT\_FOX: \verb!"adjacent_fox|x,y"!
+	\end{itemize}
+\end{itemize}
+
+\ \\
+Mensagens de resposta enviadas por \textit{World}: \verb!"foundAgentName|dx,dy|x,y"!
+
+\newpage
+\subsection{Argumentos de Criação}
+
+De modo a poder inicializar correctamente os agentes a criar é necessário passar-lhes correctamente os argumentos necessários. Assim para o agente \textit{World} é enviado o \textit{array}:\\
+
+\verb![mapWidth, mapHeight, rabbitNumber, foxNumber]!\\
+
+Para o agente \textit{Fox}: \\
+
+\verb![0,0,mapWidth,mapHeight]!\\
+
+Para o agente \textit{Rabbit}: \\
+
+\verb![0,0,mapWidth,mapHeight,gene,rule1,rule2,rule3,rule4,rule5]!
+
+\newpage
+\subsection{Estado dos Agentes}
+
+Durante o decorrer da simulação é necessário guardar o estado de cada um dos agentes \textit{Fox} e \textit{Rabbit}. Isto é feito pelo agente controlador \textit{World}, usando dois \textit{HashMaps} sincronizados de modo a que o acesso por múltiplas \textit{threads} não comprometa a sua integridade estrutural. Estes são usados pois durante a simulação é necessário efectuar pesquisas bastante intensivas. Os \textit{HashMaps} permitem que estas pesquisas sejam efectuadas em \textit{O(1)}, reduzindo drasticamente o tempo de pesquisa face a uma estrutura de dados mais simples, como por exemplo um \textit{ArrayList}.\par
+O primeiro \textit{HashMap} contém as coordenadas dos agentes como chave e o seu nome como valor, ambos como \textit{strings}. O segundo contém uma \textit{string} com o nome do agente e o seu \textit{AgentController} (jade.wrapper.AgentController), usado para ser possível terminar os agentes de forma eficaz.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Detalhes de Implementação}
+
+\subsection{Agentes}
+Existem três tipos distintos de agentes. As raposas, os coelhos e um agente único, o mundo.\par
+Existem várias tribos de coelhos, cada uma com um genoma diferente. No entanto apenas temos um tipo único de raposas, todas partilhando um genoma comum.
+
+\subsubsection{Behaviours}
+
+Foram implementados diversos \textit{behaviours} nos agentes, como classes privadas anónimas, no sentido de executar acções para a criação e desenrolar da simulação.\par
+No agente \textit{World} foi implementado um \textit{TickerBehaviour}, executado a cada 200 milisegundos e que actualiza os gráficos de estatísticas das populações e regras executadas e um \textit{CyclicBehaviour} que, para além de terminar a simulação quando o número máximo de agentes é atingido, é responsável pela recepção, processamento e resposta de mensagens dos restantes agentes.
+Os agentes \textit{Fox} e \textit{Rabbit} contêm um \textit{TickerBehaviour} responsável pela execução das regras relativas a cada agente.
+
+\subsubsection{Comunicação}
+Por forma a tornar a comunicação entre os vários agentes fluída e viável foi criado um agente intermédio. O mundo age como o agente de ligação entre todos os agentes, por forma a obter uma performance decente ao nível da comunicação. Desta forma foi ultrapassado o entrave apresentado no relatório intercalar que tornava a comunicação impraticável. Anteriormente pretendia-se que os agentes comunicassem directamente uns com os outros, o que obrigava a uma quantidade astronómica de mensagens produzidas por iteração, sendo uma carga de trabalho insustentável para as máquinas em que o projecto foi realizado e para as quais se pretende que o programa tenha uma boa performance.\par
+Nesta implementação final todos os agentes comunicam com o agente intermédio, \textit{World} (mundo). O mundo é o agente central, que cria e destrói agentes e que fornece todas as informações necessárias ao processamento da simulação. A cada iteração, os agentes informam o mundo se deve criar ou destruir agentes, recebendo do mundo informação relevante para a regra a executar.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Ambiente de desenvolvimento}
+
+Este projecto foi desenvolvido usando os seguintes recursos:
+
+\begin{itemize}
+	\item Sistema Opertativo: Windows, GNU/Linux
+	\item IDE: Eclipse 3.4, NetBeans 6.1
+	\item Linguagem: Java
+	\item Framework de Desenvolvimento de Agentes: JADE\cite{jadeguide}
+	\item Framework jFreeChart
+	\item Sistema tipográfico para preparação de documentos: \LaTeX
+	\item Ver Bibliografia (pág. \pageref{bibliografia})
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Conclusões}
+Em primeiro lugar é de referir que a quantidade de memória disponível na JVM é demasiado baixa para que a simulação tenha uma envergadura considerável. Em todo o caso a simulação decorre sem problemas, se não se excederem os 5200 agentes.\par
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Melhoramentos}
+Poderiam ser feitos alguns melhoramentos interface, com uma diferente representação dos agentes, de modo a serem mais perceptíveis as suas acções a cada iteração.\par
+Poderia também ser optimizado de alguma forma o modo de funcionamento/comunicação dos agentes por forma a tentar poupar alguma da memória da JVM e desta forma obter uma simulação capaz de obter números de maior apreciação.
+Serai também benéfico efectuar uma análise profunda à evolução dos diferentes tipos de tribos de coelhos (conjuntos de com o mesmo genoma).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Glossário}
+
+\begin{itemize}
+	\item genoma - conjunto de regras associado a um agente;
+	\item JVM - Java Virtual Machine;
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%plain, plainnat, unsrt, abbrv, alpha
+\bibliographystyle{plain}
+\bibliography{aiad}
+\label{bibliografia}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Anexos}
+\section{Manual do Utilizador}
+	\begin{figure}[htp]
+	\centering
+	\includegraphics[width=\textwidth]{image/interface}
+	\caption{Interface com o utilizador}
+	\label{interface}
+\end{figure}
+
+A simulação é iniciada no botão ``Iniciar'' (1) e  parada no botão ``Parar'' (2).\\
+Pode ser apicada uma grelha à àrea de simulação abilitando a opção ``Mostrar Grelha'' (3).\\
+Os seguintes parâmetros da simulação podem ser definidos, antes do inicio desta, na interface com o utilizador:
+\begin{itemize}
+	\item 4 - A população inícial de coelhos.
+	\item 5 - Número de tribos de coelhos.
+	\item 6 - A população inícial de raposas.
+	\item 7 - Largura do mapa.
+	\item 8 - Altura do mapa.
+\end{itemize}
+Na àrea de simulação (A) pode ser visto o comportamento dos agentes. As raposas representadas a preto e os coelhos representados por diferentes cores representativas da tribo a que cada um pertence.\\
+Nos separadores ``Estatistica de População'' (B) e ``Execução de Regras'' (C) podem ser analisados, em tempo real, a evolução das populações e o número relativo de execuções das regras de coelhos e raposas.
+
+\newpage
+\section{Exemplo de Execução}
+
+Segue-se a sequência de passos para a execução da simulação. As estatisticas podem ser vistas em qualquer passo da simulação.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=\textwidth]{image/exec1}
+	\caption{Definição de parâmetros}
+	\label{fig:exec1}
+\end{figure}
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=\textwidth]{image/exec2}
+	\caption{Início da simulação}
+	\label{fig:exec2}
+\end{figure}
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=\textwidth]{image/exec3}
+	\caption{Fim da simulação}
+	\label{fig:exec3}
+\end{figure}
+	\begin{figure}[htp]
+	\centering
+	\includegraphics[width=\textwidth]{image/exec4}
+	\caption{Evolução das populações}
+	\label{fig:exec4}
+\end{figure}
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=\textwidth]{image/exec5}
+	\caption{Estatísticas das regras}
+	\label{fig:exec5}
+\end{figure}
+
+\end{document}
