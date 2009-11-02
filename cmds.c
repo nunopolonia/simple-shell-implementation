@@ -62,6 +62,7 @@ int cmd_ajuda() {
   fprintf(stdout,"\tver - indica a versão do sosh\n");
   fprintf(stdout,"\tajuda - disponibiliza esta ajuda\n");
   fprintf(stdout,"\thist - mostra a lista de comandos utilizados pelo utilizador\n");
+  fprintf(stdout,"\t!<string> - pesquisa no histórico de comandos pelo último comando que contenha <string>\n");
   fprintf(stdout,"\texit - sai do sosh\n");
 
   return 0;

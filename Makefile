@@ -4,7 +4,7 @@ SOURCES=history.c aux.c cmds.c sosh.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=sosh
 
-all: clean $(SOURCES) $(EXECUTABLE)
+all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@
