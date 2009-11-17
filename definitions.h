@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <limits.h>
+#include <fcntl.h>
 
 /*
 ** Definitions
@@ -23,6 +24,7 @@
 #define TRUE 1
 #define FALSE 0
 
+#define FIFO_PERMS (S_IRWXU | S_IWGRP| S_IWOTH)
 
 
 #endif /* __DEFINITIONS_H__ */

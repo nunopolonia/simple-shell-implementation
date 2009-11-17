@@ -15,9 +15,11 @@ void soshreadline(char *clean_line) {
     strncpy(clean_line, line, line_size-1); 
 
     /* adds the new command to history except if it's a search */
-    if(strncmp(clean_line, "!", 1) != 0)
+    if(strncmp(clean_line, "!", 1) != 0) {
       history_add(clean_line);
-    else {
+      /* sends the output to a named pipe so that it can be read by freq */
+      sendtoserver(clean_line);
+    } else {
       /* if it's a search, finds the last command sends it to processing
       ** instead of the line received in the stdin */
       command = history_search(clean_line);
@@ -25,6 +27,7 @@ void soshreadline(char *clean_line) {
       /* if a command was found that satisfies the search */
       if(command != NULL) {
         history_add(command);
+        sendtoserver(clean_line);
         printf("command found: %s\n", command);
         /* clears the memory block used to receive every command,
         ** we pass that command for parsing */
@@ -266,4 +269,22 @@ void print_tree_below(char *path) {
   return;
 }
 
+int sendtoserver(char *cmd) {
+   int len;
+   char requestbuf[PIPE_BUF];
+   int requestfd;
+
+   if ((requestfd = open("/tmp/sosh.canal", O_WRONLY)) == -1) {
+       perror("Client failed to open log fifo for writing");
+       return 1;
+   }
+   snprintf(requestbuf, PIPE_BUF, "%s", cmd);
+   len = strlen(requestbuf);
+   if (r_write(requestfd, requestbuf, len) != len) {
+      perror("Client failed to write");
+      return 1;
+   }
+   r_close(requestfd);
+   return 0;
+}
 
