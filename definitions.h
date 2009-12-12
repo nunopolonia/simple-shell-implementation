@@ -18,6 +18,7 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <pthread.h>
 
 
 /*

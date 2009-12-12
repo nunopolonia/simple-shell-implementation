@@ -2,11 +2,11 @@
 
 /* sosh readline function */
 void soshreadline(char *clean_line) {
-	char line[MAX_CANON] = "";
-	int line_size = 0;
-	char *command = NULL;
+  char line[MAX_CANON] = "";
+  int line_size = 0;
+  char *command = NULL;
 
-	/* cleans the input buffer */
+  /* cleans the input buffer */
   memset(clean_line, 0, MAX_CANON);
 
 	printf("> ");
@@ -18,7 +18,7 @@ void soshreadline(char *clean_line) {
     if(strncmp(clean_line, "!", 1) != 0) {
       history_add(clean_line);
       /* sends the output to a named pipe so that it can be read by freq */
-      sendtoserver(clean_line);
+      sendtexttoserver(clean_line);
     } else {
       /* if it's a search, finds the last command sends it to processing
       ** instead of the line received in the stdin */
@@ -27,7 +27,7 @@ void soshreadline(char *clean_line) {
       /* if a command was found that satisfies the search */
       if(command != NULL) {
         history_add(command);
-        sendtoserver(clean_line);
+        sendtexttoserver(clean_line);
         printf("command found: %s\n", command);
         /* clears the memory block used to receive every command,
         ** we pass that command for parsing */
@@ -116,11 +116,11 @@ int makeargv(char *s, char *delimiters, char ***argvp) {
 }
 
 void freemakeargv(char **argv) {
-   if (argv == NULL)
-      return;
-   if (*argv != NULL)
-      free(*argv);
-   free(argv);
+  if (argv == NULL)
+    return;
+  if (*argv != NULL)
+    free(*argv);
+  free(argv);
 }
 
 void depthsearch(char *path, char *search_string) {
@@ -269,36 +269,68 @@ void print_tree_below(char *path) {
   return;
 }
 
-int sendtoserver(char *cmd) {
-   int len;
-   char requestbuf[PIPE_BUF];
-   int requestfd;
+/* send commands to the sosh.canal named pipe */
+int sendtexttoserver(char *cmd) {
+  int len;
+  char requestbuf[PIPE_BUF];
+  int requestfd;
 
-   if ((requestfd = open("/tmp/sosh.canal", O_RDWR)) == -1) {
-       perror("Client failed to open log fifo for writing");
-       return 1;
-   }
+  if ((requestfd = open("/tmp/sosh.canal", O_RDWR)) == -1) {
+    perror("Client failed to open log fifo for writing");
+    return 1;
+  }
 
-   snprintf(requestbuf, PIPE_BUF, "%s", cmd);
-   len = strlen(requestbuf);
+  snprintf(requestbuf, PIPE_BUF, "%s", cmd);
+  len = strlen(requestbuf);
 
-   if (write(requestfd, requestbuf, len) != len) {
-      perror("Client failed to write");
-      return 1;
-   }
+  if (write(requestfd, requestbuf, len) != len) {
+    perror("Client failed to write");
+    return 1;
+  }
 
-   close(requestfd);
-   return 0;
+  close(requestfd);
+  return 0;
 }
 
+/* takes a string and puts every caracter in lowercase */
 char *strlwr(char *string) {
-    char *p = string;
+  char *p = string;
 
-    while (p && *p) {
-        *p = tolower(*p);
-        p++;
-    }
+  while (p && *p) {
+    *p = tolower(*p);
+    p++;
+  }
 
-    return string;
+  return string;
+}
+
+/* takes the frequences array and prints it */
+void print_alphabet(int *alphabet) {
+  int i;
+
+  /* for each element in the array... */
+  for (i = 0; i < 26; i++) {
+    /* add the letter a ascii offset to print the caracter */
+    printf("%c - %d | ", (char)(i+97), alphabet[i]);
+  }
+
+  printf("\n");
+
+  return;
+}
+
+int copyfd(int fromfd, int tofd) {
+  char buf[LINE_MAX];
+  int bytesread, byteswritten;
+  int totalbytes = 0;
+
+  for ( ; ; ) {
+    if( (bytesread = read(fromfd, buf, LINE_MAX)) <= 0 )
+      break;
+    if( (byteswritten = write(tofd, buf, bytesread)) == -1 )
+      break;
+    totalbytes += byteswritten;
+  }
+  return totalbytes;
 }
 

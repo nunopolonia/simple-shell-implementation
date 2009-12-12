@@ -18,9 +18,13 @@ void print_tree_below(char *path);
 
 /* 2nd phase functions */
 
-int sendtoserver(char *cmd);
+int sendtexttoserver(char *cmd);
 
 char *strlwr(char *string);
+
+void print_alphabet(int *alphabet);
+
+int copyfd(int fromfd, int tofd);
 
 #endif /* __AUX_H__ */
 

@@ -3,16 +3,16 @@
 int cmd_quem() {
   /* who system call */
   execl("/usr/bin/who", "who", NULL);
-  perror("Child failed to exec who"); 
-  
+  perror("Child failed to exec who");
+
   return 0;
 }
 
 int cmd_psu() {
   /* lists the user processes */
   execl("/bin/ps", "ps", "ux", NULL);
-  perror("Child failed to exec ps"); 
-  
+  perror("Child failed to exec ps");
+
   return 0;
 }
 
@@ -25,31 +25,31 @@ int cmd_usrbin(char* cmd) {
     perror("Parent failed to create the argument array\n");
   } else {
   /* execvp completly substitutes the process in memory so the message is showed
-  ** if the execvp command fails meaning that we are still in the sosh process */  
-    execvp(myargv[0], myargv);  
+  ** if the execvp command fails meaning that we are still in the sosh process */
+    execvp(myargv[0], myargv);
     printf("sosh: Command not found\n");
   }
-  
+
   return 0;
 }
 
 int cmd_exit() {
-  
+
   history_destroy(history_list);
-       
+
   /* kills the parent process TODO switch to SIGUSR1 */
   if (kill(getppid(), SIGTERM) == -1)
     perror ("Failed to kill parent");
   /* guarantees that there's no zombie processes */
   if (raise(SIGTERM) != 0)
-    perror("Failed to kill self"); 
-  
+    perror("Failed to kill self");
+
   return 0;
 }
 
 int cmd_ver() {
   fprintf(stdout,"sosh versão 0.3b\n");
-  
+
   return 0;
 }
 
@@ -63,15 +63,16 @@ int cmd_ajuda() {
   fprintf(stdout,"\tajuda - disponibiliza esta ajuda\n");
   fprintf(stdout,"\thist - mostra a lista de comandos utilizados pelo utilizador\n");
   fprintf(stdout,"\t!<string> - pesquisa no histórico de comandos pelo último comando que contenha <string>\n");
+  fprintf(stdout,"\tstats - mostra a lista de letras que passaram pela consola e sua respectiva frequência\n");
   fprintf(stdout,"\texit - sai do sosh\n");
 
   return 0;
 }
 
 int cmd_hist() {
-  
+
   history_print(history_list);
-  
+
   return 0;
 }
 
@@ -85,6 +86,40 @@ int cmd_localiza(char* cmd) {
 
   /* makes a depth-first search starting at "init_path" searching for search_string */
   depthsearch(init_path, search_string);
+
+  return 0;
+}
+
+int cmd_stats() {
+  int len, statfd, resultsfd;
+  char requestbuf[PIPE_BUF];
+
+  /* open a read/write communication endpoint to the sosh.cmd pipe */
+  if ((statfd = open("/tmp/sosh.cmd", O_RDWR)) == -1) {
+     perror("Client failed to open log fifo for writing");
+     return 1;
+  }
+
+  snprintf(requestbuf, PIPE_BUF, "stats");
+  len = strlen(requestbuf);
+
+  if (write(statfd, requestbuf, len) != len) {
+    perror("Client failed to write");
+    return 1;
+  }
+  /* close communication endpoint to the sosh.cmd pipe */
+  close(statfd);
+
+  /* open a read only communication endpoint to the pipe */
+  if ((resultsfd = open("/tmp/sosh.results", O_RDONLY)) == -1) {
+     perror("Client failed to open log fifo for writing");
+     return 1;
+  }
+
+  /* copies resultsfd contents to the standard output */
+  //copyfd(resultsfd, STDOUT_FILENO);
+
+  close(resultsfd);
 
   return 0;
 }

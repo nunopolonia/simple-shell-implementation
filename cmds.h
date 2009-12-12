@@ -19,8 +19,10 @@ int cmd_localiza(char* cmd);
 int cmd_ver();
 
 int cmd_ajuda();
- 
+
 int cmd_hist();
+
+int cmd_stats();
 
 #endif /* __CMDS_H__ */
 
