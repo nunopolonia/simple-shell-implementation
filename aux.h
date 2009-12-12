@@ -2,7 +2,6 @@
 #define __AUX_H__
 
 #include "history.h"
-#include "restart.h"
 
 /* 1st phase functions */
 void soshreadline(char *clean_line);
@@ -21,7 +20,7 @@ void print_tree_below(char *path);
 
 int sendtoserver(char *cmd);
 
-void countstringletters(int flag, char string);
+char *strlwr(char *string);
 
 #endif /* __AUX_H__ */
 

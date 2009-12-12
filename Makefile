@@ -1,15 +1,15 @@
 CC=gcc
 CFLAGS=-Wall
 LDFLAGS=-lpthread
-SOURCES=history.c restart.c aux.c cmds.c
+SOURCES=history.c aux.c cmds.c
 OBJECTS=$(SOURCES:.c=.o)
 
 all: clean sosh freq
 
-sosh: $(OBJECTS) sosh.c 
+sosh: $(OBJECTS) sosh.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) sosh.c -o sosh
 
-freq: $(OBJECTS) freq.c 
+freq: $(OBJECTS) freq.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) freq.c -o freq
 
 .c.o:
@@ -17,5 +17,6 @@ freq: $(OBJECTS) freq.c
 
 clean:
 	rm -f $(OBJECTS) *.o sosh freq
-	
+
 rebuild: clean all
+

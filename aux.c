@@ -5,14 +5,14 @@ void soshreadline(char *clean_line) {
 	char line[MAX_CANON] = "";
 	int line_size = 0;
 	char *command = NULL;
-	
+
 	/* cleans the input buffer */
   memset(clean_line, 0, MAX_CANON);
-  
+
 	printf("> ");
 	if( fgets(line, MAX_CANON, stdin) != NULL ) {
     line_size = strlen(line);
-    strncpy(clean_line, line, line_size-1); 
+    strncpy(clean_line, line, line_size-1);
 
     /* adds the new command to history except if it's a search */
     if(strncmp(clean_line, "!", 1) != 0) {
@@ -23,7 +23,7 @@ void soshreadline(char *clean_line) {
       /* if it's a search, finds the last command sends it to processing
       ** instead of the line received in the stdin */
       command = history_search(clean_line);
-      
+
       /* if a command was found that satisfies the search */
       if(command != NULL) {
         history_add(command);
@@ -36,7 +36,7 @@ void soshreadline(char *clean_line) {
         strncpy(clean_line, command, line_size);
       } else
         printf("Command not found in history\n");
-    }    
+    }
   }
 
 	return;
@@ -48,7 +48,7 @@ void exitfunction() {
   char error[] = "Os parametros aceites são (s) ou (n)\n";
   int error_len = sizeof(error);
 	int input;
-  
+
   /* we are using the write funcion instead of printf because it isn't afected by signals */
   write(STDERR_FILENO, question, question_len);
   while(TRUE) {
@@ -57,7 +57,7 @@ void exitfunction() {
     input = fgetc(stdin);
     /* catches the newline caracter in the end of the input */
     getchar();
-    
+
     if( input == 's' ) {
       /* destroys the space ocuppied by history list from memory */
       printf("Terminating sosh...\n");
@@ -71,7 +71,7 @@ void exitfunction() {
       write(STDERR_FILENO, error, error_len);
       continue;
   }
-  
+
   return;
 }
 
@@ -132,19 +132,19 @@ void depthsearch(char *path, char *search_string) {
 
   if( chdir(path) == -1 )
     perror("Failed to change working directory");
-  
+
   /* path fetching error handling */
   if( getcwd(mycwd, PATH_MAX) == NULL ) {
     perror("Failed to get current working directory");
     return;
   }
-  
+
   /* open the init_path directory */
   if( (dirp = opendir(mycwd) ) == NULL ) {
     perror("Failed to open directory");
     return;
   }
-  
+
   while( ( direntp = readdir(dirp) ) != NULL ) {
     /* File status error handling */
     if(stat(direntp->d_name, &statbuf) == -1 )
@@ -152,20 +152,20 @@ void depthsearch(char *path, char *search_string) {
 
     /* If the string is in any of the folder files */
     if(strstr(direntp->d_name, search_string) != NULL ) {
-      /* if its a dir print all the tree below in a new process so 
+      /* if its a dir print all the tree below in a new process so
       ** we don't mess with the current working directory */
       if( (S_ISDIR(statbuf.st_mode) == TRUE) && (S_ISLNK(statbuf.st_mode) == FALSE) ) {
         printf("%s/%s\n", mycwd, direntp->d_name);
-        
+
         childpid = fork();
-      
+
         /* fork error handling */
         if( childpid == -1 ) {
           perror("Failed to fork\n");
           return;
         }
         /* child code */
-        if( childpid == 0 ) {      
+        if( childpid == 0 ) {
           print_tree_below(direntp->d_name);
           return;
         }
@@ -184,14 +184,14 @@ void depthsearch(char *path, char *search_string) {
                 && (strcmp(direntp->d_name, ".") != 0) && (strcmp(direntp->d_name, "..") != 0) ) {
       /* Launches a child process for each folder */
       childpid = fork();
-      
+
       /* fork error handling */
       if( childpid == -1 ) {
         perror("Failed to fork\n");
         return;
       }
       /* child code */
-      if( childpid == 0 ) {      
+      if( childpid == 0 ) {
         depthsearch(direntp->d_name, search_string);
         return;
       }
@@ -201,11 +201,11 @@ void depthsearch(char *path, char *search_string) {
         if( (waitchild == -1) && (errno != EINTR) )
           break;
       }
-    }    
+    }
   }
   /* close init_path directory */
   while( (closedir(dirp) == -1) && (errno == EINTR) );
-  
+
   return;
 }
 
@@ -218,19 +218,19 @@ void print_tree_below(char *path) {
 
   if( chdir(path) == -1 )
     perror("Failed to change working directory");
-  
+
   /* path fetching error handling */
   if( getcwd(mycwd, PATH_MAX) == NULL ) {
     perror("Failed to get current working directory");
     return;
   }
-  
+
   /* open the init_path directory */
   if( ( dirp = opendir(mycwd) ) == NULL ) {
     perror("Failed to open directory");
     return;
   }
-  
+
   while( ( direntp = readdir(dirp) ) != NULL ) {
     /* File status error handling */
     if(stat(direntp->d_name, &statbuf) == -1 )
@@ -239,19 +239,19 @@ void print_tree_below(char *path) {
     /* Print the filenames */
     if( (strcmp(direntp->d_name, ".") != 0) && (strcmp(direntp->d_name, "..") != 0) )
       printf("%s/%s\n", mycwd, direntp->d_name);
-    
+
     if( (S_ISDIR(statbuf.st_mode) == TRUE) && (S_ISLNK(statbuf.st_mode) == FALSE)
          && (strcmp(direntp->d_name, ".") != 0) && (strcmp(direntp->d_name, "..") != 0) ) {
       /* Launches a child process for each folder */
       childpid = fork();
-      
+
       /* fork error handling */
       if( childpid == -1 ) {
         perror("Failed to fork\n");
         return;
       }
       /* child code */
-      if( childpid == 0 ) {      
+      if( childpid == 0 ) {
         print_tree_below(direntp->d_name);
         return;
       }
@@ -261,11 +261,11 @@ void print_tree_below(char *path) {
         if( (waitchild == -1) && (errno != EINTR) )
           break;
       }
-    }    
+    }
   }
   /* close init_path directory */
   while( (closedir(dirp) == -1) && (errno == EINTR) );
-  
+
   return;
 }
 
@@ -274,17 +274,31 @@ int sendtoserver(char *cmd) {
    char requestbuf[PIPE_BUF];
    int requestfd;
 
-   if ((requestfd = open("/tmp/sosh.canal", O_WRONLY)) == -1) {
+   if ((requestfd = open("/tmp/sosh.canal", O_RDWR)) == -1) {
        perror("Client failed to open log fifo for writing");
        return 1;
    }
+
    snprintf(requestbuf, PIPE_BUF, "%s", cmd);
    len = strlen(requestbuf);
-   if (r_write(requestfd, requestbuf, len) != len) {
+
+   if (write(requestfd, requestbuf, len) != len) {
       perror("Client failed to write");
       return 1;
    }
-   r_close(requestfd);
+
+   close(requestfd);
    return 0;
+}
+
+char *strlwr(char *string) {
+    char *p = string;
+
+    while (p && *p) {
+        *p = tolower(*p);
+        p++;
+    }
+
+    return string;
 }
 

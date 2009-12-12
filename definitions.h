@@ -1,7 +1,7 @@
 #ifndef __DEFINITIONS_H__
 #define __DEFINITIONS_H__
 
-/* 
+/*
 ** System Includes
 */
 #include <signal.h>
@@ -17,6 +17,8 @@
 #include <errno.h>
 #include <limits.h>
 #include <fcntl.h>
+#include <ctype.h>
+
 
 /*
 ** Definitions
@@ -28,3 +30,4 @@
 
 
 #endif /* __DEFINITIONS_H__ */
+
