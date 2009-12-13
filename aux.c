@@ -55,7 +55,7 @@ void exitfunction() {
     printf("> ");
     /* TODO catch bad input with more than one letter */
     input = fgetc(stdin);
-    /* catches the newline caracter in the end of the input */
+    /* catches the newline character in the end of the input */
     getchar();
 
     if( input == 's' ) {
@@ -292,7 +292,7 @@ int sendtexttoserver(char *cmd) {
   return 0;
 }
 
-/* takes a string and puts every caracter in lowercase */
+/* takes a string and puts every character in lowercase */
 char *strlwr(char *string) {
   char *p = string;
 
@@ -310,7 +310,7 @@ void print_alphabet(int *alphabet) {
 
   /* for each element in the array... */
   for (i = 0; i < 26; i++) {
-    /* add the letter a ascii offset to print the caracter */
+    /* add the letter a ascii offset to print the character */
     printf("%c - %d | ", (char)(i+97), alphabet[i]);
   }
 
@@ -332,5 +332,136 @@ int copyfd(int fromfd, int tofd) {
     totalbytes += byteswritten;
   }
   return totalbytes;
+}
+
+void *readandcounttext(void *v) {
+  int requestfd, rval, i;
+  char textbuffer[LINE_MAX] = {}, *lwrbuffer;
+
+  arg *arguments = (arg*) v;
+
+  int verbose = (int) arguments->verbose;
+  int *frequences = (int*) arguments->frequences;
+
+  /* create a named pipe to receive text */
+  if ((mkfifo("/tmp/sosh.canal", FIFO_PERMS) == -1) && (errno != EEXIST)) {
+     perror("Server failed to create a FIFO");
+     return NULL;
+  }
+
+  /* open a read/write communication endpoint to the sosh.canal pipe */
+  if ((requestfd = open("/tmp/sosh.canal", O_RDWR)) == -1) {
+     perror("Server failed to open its FIFO");
+     return NULL;
+  }
+
+  /* while cycle reading the commands */
+  while( TRUE ) {
+    rval = read(requestfd, textbuffer, LINE_MAX);
+    if(verbose && rval > 0) { printf("Read %d characters from sosh.canal\n", rval); }
+
+    if (rval == -1) {
+      fprintf(stderr, "failed to read from pipe: %s\n", strerror(errno));
+      return NULL;
+    }
+
+    /* lower every character */
+    lwrbuffer = strlwr(textbuffer);
+
+    /* read the string and count the ocurrences of each letter */
+    for (i = 0; i < rval; i++) {
+      if( (int)lwrbuffer[i] > 96 && (int)lwrbuffer[i] < 123 ) {
+        int index = (int)lwrbuffer[i] - 97;
+        frequences[index]++;
+      }
+    }
+    /* print alphabet */
+    if(verbose) { print_alphabet(frequences); }
+  }
+
+  return NULL;
+}
+
+void *readandrespondtocmds(void *v) {
+  int cmdsfd, resultsfd, bytesread, i;
+  char cmdbuffer[LINE_MAX] = {};
+  character *alphabet[26];
+
+  arg *arguments = (arg*) v;
+
+  int verbose = (int) arguments->verbose;
+  int *frequences = (int*) arguments->frequences;
+
+  /* create a named pipe to handle incoming requests */
+  if ((mkfifo("/tmp/sosh.cmd", FIFO_PERMS) == -1) && (errno != EEXIST)) {
+     perror("Server failed to create a FIFO");
+     return NULL;
+  }
+
+  /* create a named pipe to send the incoming requests results */
+  if ((mkfifo("/tmp/sosh.results", FIFO_PERMS) == -1) && (errno != EEXIST)) {
+     perror("Server failed to create a FIFO");
+     return NULL;
+  }
+
+  /* open a read communication endpoint to the pipe */
+  if ((cmdsfd = open("/tmp/sosh.cmd", O_RDONLY)) == -1) {
+     perror("Server failed to open its FIFO");
+     return NULL;
+  }
+
+  /* open a write communication endpoint to the pipe */
+  if ((resultsfd = open("/tmp/sosh.results", O_WRONLY)) == -1) {
+     perror("Server failed to open its FIFO");
+     return NULL;
+  }
+
+  /* while cycle reading the commands */
+  while( TRUE ) {
+
+    bytesread = read(cmdsfd, cmdbuffer, LINE_MAX);
+    if(verbose && bytesread > 0) { printf("Read %d characters from sosh.cmd\n", bytesread); }
+
+    if (bytesread == -1) {
+      fprintf(stderr, "failed to read from pipe: %s\n", strerror(errno));
+      return NULL;
+    }
+
+    if(strcmp(cmdbuffer, "stats") == 0) {
+      for( i = 0; i < 27; i++) {
+        alphabet[i]->c = (char) i+97;
+        alphabet[i]->frequence = frequences[i];
+      }
+      for( i = 0; i < 27; i++) {
+        printf("%c - %d | ", alphabet[i]->c, alphabet[i]->frequence);
+        printf("\n");
+      }
+    }
+  }
+
+  return NULL;
+}
+
+/* quicksort implementation taken from http://alienryderflex.com/quicksort/ */
+void swap(int *a, int *b)
+{
+  int t=*a; *a=*b; *b=t;
+}
+void sort(int arr[], int beg, int end)
+{
+  if (end > beg + 1)
+  {
+    int piv = arr[beg], l = beg + 1, r = end;
+    while (l < r)
+    {
+      if (arr[l] <= piv)
+        l++;
+      else
+        swap(&arr[l], &arr[--r]);
+    }
+    swap(&arr[--l], &arr[beg]);
+    sort(arr, beg, l);
+    sort(arr, r, end);
+  }
 }
 
