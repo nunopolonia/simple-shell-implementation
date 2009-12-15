@@ -37,8 +37,6 @@ char *strlwr(char *string);
 
 void print_alphabet(int *alphabet);
 
-int copyfd(int fromfd, int tofd);
-
 void *readandcounttext(void *v);
 
 void *readandrespondtocmds(void *v);

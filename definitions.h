@@ -31,6 +31,5 @@
 
 #define RBUF_SIZE 20480
 
-
 #endif /* __DEFINITIONS_H__ */
 

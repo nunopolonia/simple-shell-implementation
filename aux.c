@@ -319,47 +319,36 @@ void print_alphabet(int *alphabet) {
   return;
 }
 
-int copyfd(int fromfd, int tofd) {
-  char buf[LINE_MAX];
-  int bytesread, byteswritten;
-  int totalbytes = 0;
 
-  for ( ; ; ) {
-    if( (bytesread = read(fromfd, buf, LINE_MAX)) <= 0 )
-      break;
-    if( (byteswritten = write(tofd, buf, bytesread)) == -1 )
-      break;
-    totalbytes += byteswritten;
-  }
-  return totalbytes;
-}
-
+/**/
 void *readandcounttext(void *v) {
   int requestfd, rval, i;
   char textbuffer[LINE_MAX] = "", *lwrbuffer;
+  pthread_mutex_t mylock = PTHREAD_MUTEX_INITIALIZER;
 
   arg *arguments = (arg*) v;
 
   int verbose = (int) arguments->verbose;
   int *frequences = (int*) arguments->frequences;
 
-  /* create a named pipe to receive text */
-  if ((mkfifo("/tmp/sosh.canal", FIFO_PERMS) == -1) && (errno != EEXIST)) {
-     perror("Server failed to create a FIFO");
-     return NULL;
-  }
-
-  /* open a read/write communication endpoint to the sosh.canal pipe */
-  if ((requestfd = open("/tmp/sosh.canal", O_RDWR)) == -1) {
-     perror("Server failed to open its FIFO");
-     return NULL;
-  }
 
   /* while cycle reading the commands */
   while( TRUE ) {
+
+    pthread_mutex_lock(&mylock);
+    /* open a read only communication endpoint to the sosh.canal pipe */
+    if ((requestfd = open("/tmp/sosh.canal", O_RDONLY)) == -1) {
+       perror("Server failed to open its FIFO");
+       return NULL;
+    }
+
     rval = read(requestfd, textbuffer, LINE_MAX);
 
-    if(verbose && rval > 0) { printf("Read %d characters from sosh.canal\n", rval); }
+    close(requestfd);
+
+    pthread_mutex_unlock(&mylock);
+
+    if(verbose && rval > 0) { printf("Read %d characters from sosh.canal from thread %u\n", rval, (int)pthread_self()); }
 
     if (rval == -1) {
       fprintf(stderr, "failed to read from pipe: %s\n", strerror(errno));
