@@ -35,22 +35,21 @@ int main (int argc, char *argv[]) {
   arguments.verbose = verbose;
   arguments.frequences = frequences;
 
-  /* create thread that handles the character counting */
-  if( (error = pthread_create(&txt_tid, NULL, readandcounttext, (void*) &arguments )) )
-    fprintf(stderr, "Failed to create thread: %s\n", strerror(error));
-
-  /* makes the server wait for the thread */
-  if( (error = pthread_join(txt_tid, NULL)) )
-    fprintf(stderr, "Failed to join thread: %s\n", strerror(error));
-
   /* create thread that handles the client commands */
   if( (error = pthread_create(&cmd_tid, NULL, readandrespondtocmds, &verbose)) )
+    fprintf(stderr, "Failed to create thread: %s\n", strerror(error));
+
+  /* create thread that handles the character counting */
+  if( (error = pthread_create(&txt_tid, NULL, readandcounttext, (void*) &arguments )) )
     fprintf(stderr, "Failed to create thread: %s\n", strerror(error));
 
   /* makes the server wait for the thread */
   if( (error = pthread_join(cmd_tid, NULL)) )
     fprintf(stderr, "Failed to join thread: %s\n", strerror(error));
 
+  /* makes the server wait for the thread */
+  if( (error = pthread_join(txt_tid, NULL)) )
+    fprintf(stderr, "Failed to join thread: %s\n", strerror(error));
 
   return 0;
 }

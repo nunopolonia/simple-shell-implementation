@@ -2,10 +2,11 @@
 
 int main (int argc, char *argv[]) {
   /* main variables declarations */
-  char cmd[MAX_CANON] = "";
+  char cmd[MAX_CANON] = "", redirectbuf[RBUF_SIZE] = "";
   pid_t childpid;
   sigset_t mask, orig_mask;
   struct sigaction act;
+  int statfd, redirectfd, fd[2], rval;
 
   /* initialization of the history list */
   using_history(history_list);
@@ -15,6 +16,18 @@ int main (int argc, char *argv[]) {
   act.sa_flags = 0;
   if ( (sigemptyset(&act.sa_mask) == -1) || (sigaction(SIGINT, &act, NULL) == -1) )
    perror("Failed to set SIGINT to handle Ctrl-C");
+
+  /* open a read/write communication endpoint to the sosh.cmd pipe */
+  if ((statfd = open("/tmp/sosh.cmd", O_WRONLY)) == -1) {
+     perror("Client failed to open log fifo for writing");
+     return 1;
+  }
+
+  /* open a read/write communication endpoint to the sosh.canal pipe */
+  if ((redirectfd = open("/tmp/sosh.canal", O_WRONLY)) == -1) {
+     perror("Client failed to open log fifo for writing");
+     return 1;
+  }
 
   /* SOSH MAIN LOOP */
   while(TRUE) {
@@ -28,6 +41,12 @@ int main (int argc, char *argv[]) {
       return 1;
     }
 
+    /* create pipe for stdout redirection */
+    if(pipe(fd) == -1) {
+      perror("Failed to redirect stdout of child");
+      return 1;
+    }
+
     /* Launches a child process for each command */
     childpid = fork();
 
@@ -38,26 +57,32 @@ int main (int argc, char *argv[]) {
     }
     /* child code */
     if( childpid == 0 ) {
-       /* "quem" process call */
-      if( strcmp(cmd, "quem") == 0 ) { cmd_quem(); }
-      /* "psu" process call */
-      else if( strcmp(cmd, "psu") == 0 ) { cmd_psu(); }
-      /* "ver" process call */
-      else if( strcmp(cmd, "ver") == 0 ) { cmd_ver(); }
-      /* "ajuda" process call */
-      else if( strcmp(cmd, "ajuda") == 0 ) { cmd_ajuda(); }
-      /* "localiza" process call */
-      else if( strncmp(cmd, "localiza", 8) == 0 ) { cmd_localiza(cmd); }
-      /* "exit" process call */
-      else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
-      /* "hist" process call */
-      else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
-      /* "stats" process call */
-      else if( strcmp(cmd, "stats") == 0 ) { cmd_stats(); }
-      /* search the history for the last command starting with string */
-      else { cmd_usrbin(cmd); }
+      if (dup2(fd[1], STDOUT_FILENO) == -1)
+         perror("Failed to redirect stdout of child");
+      else if ((close(fd[0]) == -1) || (close(fd[1]) == -1))
+         perror("Failed to close extra pipe descriptors");
+      else {
+         /* "quem" process call */
+        if( strcmp(cmd, "quem") == 0 ) { cmd_quem(); }
+        /* "psu" process call */
+        else if( strcmp(cmd, "psu") == 0 ) { cmd_psu(); }
+        /* "ver" process call */
+        else if( strcmp(cmd, "ver") == 0 ) { cmd_ver(); }
+        /* "ajuda" process call */
+        else if( strcmp(cmd, "ajuda") == 0 ) { cmd_ajuda(); }
+        /* "localiza" process call */
+        else if( strncmp(cmd, "localiza", 8) == 0 ) { cmd_localiza(cmd); }
+        /* "exit" process call */
+        else if( strcmp(cmd, "exit") == 0 ) { cmd_exit(); }
+        /* "hist" process call */
+        else if( strcmp(cmd, "hist") == 0 ) { cmd_hist(); }
+        /* "stats" process call */
+        else if( strcmp(cmd, "stats") == 0 ) { cmd_stats(statfd); }
+        /* search the history for the last command starting with string */
+        else { cmd_usrbin(cmd); }
+      }
 
-      return 1;
+      return 0;
     }
 
     /* parent process restoring signals */
@@ -70,6 +95,18 @@ int main (int argc, char *argv[]) {
     if( childpid != wait(NULL) ) {
       perror("Parent failed to wait due to signal or error\n");
       return 1;
+    }
+
+    /* read from the pipe */
+    rval = read(fd[0], redirectbuf, RBUF_SIZE);
+
+    if(rval > 0) {
+      /* print to stdout */
+      printf("%*s\n", rval, redirectbuf);
+
+      /* send command output to sosh.canal */
+      sendtexttoserver(redirectbuf);
+      memset(redirectbuf, 0, RBUF_SIZE);
     }
 
   } /* while closing bracket */

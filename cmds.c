@@ -90,12 +90,12 @@ int cmd_localiza(char* cmd) {
   return 0;
 }
 
-int cmd_stats() {
-  int len, statfd, resultsfd;
-  char requestbuf[PIPE_BUF];
+int cmd_stats(int statfd) {
+  int len, resultsfd, rval;
+  char requestbuf[PIPE_BUF], resultbuf[PIPE_BUF];
 
-  /* open a read/write communication endpoint to the sosh.cmd pipe */
-  if ((statfd = open("/tmp/sosh.cmd", O_RDWR)) == -1) {
+  /* open a read only communication endpoint to the pipe */
+  if ((resultsfd = open("/tmp/sosh.results", O_RDWR)) == -1) {
      perror("Client failed to open log fifo for writing");
      return 1;
   }
@@ -107,19 +107,16 @@ int cmd_stats() {
     perror("Client failed to write");
     return 1;
   }
-  /* close communication endpoint to the sosh.cmd pipe */
-  close(statfd);
 
-  /* open a read only communication endpoint to the pipe */
-  if ((resultsfd = open("/tmp/sosh.results", O_RDONLY)) == -1) {
-     perror("Client failed to open log fifo for writing");
-     return 1;
+
+  /* Read the result from the sosh.results */
+  rval = read(resultsfd, resultbuf, LINE_MAX);
+  if (rval == -1) {
+    fprintf(stderr, "failed to read from pipe: %s\n", strerror(errno));
+    return 1;
   }
 
-  /* copies resultsfd contents to the standard output */
-  //copyfd(resultsfd, STDOUT_FILENO);
-
-  close(resultsfd);
+  printf("%*s\n", rval, resultbuf);
 
   return 0;
 }

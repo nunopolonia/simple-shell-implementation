@@ -293,7 +293,7 @@ int sendtexttoserver(char *cmd) {
 }
 
 /* takes a string and puts every character in lowercase */
-char *strlwr(char *string) {
+ char *strlwr(char *string) {
   char *p = string;
 
   while (p && *p) {
@@ -336,7 +336,7 @@ int copyfd(int fromfd, int tofd) {
 
 void *readandcounttext(void *v) {
   int requestfd, rval, i;
-  char textbuffer[LINE_MAX] = {}, *lwrbuffer;
+  char textbuffer[LINE_MAX] = "", *lwrbuffer;
 
   arg *arguments = (arg*) v;
 
@@ -358,6 +358,7 @@ void *readandcounttext(void *v) {
   /* while cycle reading the commands */
   while( TRUE ) {
     rval = read(requestfd, textbuffer, LINE_MAX);
+
     if(verbose && rval > 0) { printf("Read %d characters from sosh.canal\n", rval); }
 
     if (rval == -1) {
@@ -384,8 +385,9 @@ void *readandcounttext(void *v) {
 
 void *readandrespondtocmds(void *v) {
   int cmdsfd, resultsfd, bytesread, i;
-  char cmdbuffer[LINE_MAX] = {};
-  character *alphabet[26];
+  char cmdbuffer[LINE_MAX] = "", tmp[PIPE_BUF] = "";
+  char resultbuf[PIPE_BUF] = "";
+  character *alphabet;
 
   arg *arguments = (arg*) v;
 
@@ -419,7 +421,9 @@ void *readandrespondtocmds(void *v) {
   /* while cycle reading the commands */
   while( TRUE ) {
 
+    *resultbuf = 0;
     bytesread = read(cmdsfd, cmdbuffer, LINE_MAX);
+
     if(verbose && bytesread > 0) { printf("Read %d characters from sosh.cmd\n", bytesread); }
 
     if (bytesread == -1) {
@@ -427,14 +431,36 @@ void *readandrespondtocmds(void *v) {
       return NULL;
     }
 
+
+    /* if the server receives the command stats from the sosh.cmd */
     if(strcmp(cmdbuffer, "stats") == 0) {
-      for( i = 0; i < 27; i++) {
-        alphabet[i]->c = (char) i+97;
-        alphabet[i]->frequence = frequences[i];
+      /*since the letter of the alphabet in the first array is defined by it's
+      index for speed purposes, we copy the information to a struct which contains
+      the character and its frequence */
+      alphabet = malloc( 26*sizeof(character) );
+
+      for( i = 0; i < 26; i++) {
+        alphabet[i].c = (char) i+97;
+        alphabet[i].frequence = frequences[i];
       }
-      for( i = 0; i < 27; i++) {
-        printf("%c - %d | ", alphabet[i]->c, alphabet[i]->frequence);
-        printf("\n");
+
+      /* sort the elements of the array */
+      qsort(&alphabet[0], 26, sizeof(character), cmpintp);
+
+      for( i = 0; i < 26; i++) {
+        sprintf(tmp,"%c - %d | ", alphabet[i].c, alphabet[i].frequence);
+        strcat(resultbuf, tmp);
+      }
+
+      /* write the results to sosh.results */
+      if (write(resultsfd, resultbuf, strlen(resultbuf) ) != strlen(resultbuf)) {
+        perror("Server failed to write");
+        return NULL;
+      }
+      else {
+        memset(cmdbuffer, 0, LINE_MAX);
+        memset(resultbuf, 0, PIPE_BUF);
+        free(alphabet);
       }
     }
   }
@@ -442,26 +468,14 @@ void *readandrespondtocmds(void *v) {
   return NULL;
 }
 
-/* quicksort implementation taken from http://alienryderflex.com/quicksort/ */
-void swap(int *a, int *b)
-{
-  int t=*a; *a=*b; *b=t;
-}
-void sort(int arr[], int beg, int end)
-{
-  if (end > beg + 1)
-  {
-    int piv = arr[beg], l = beg + 1, r = end;
-    while (l < r)
-    {
-      if (arr[l] <= piv)
-        l++;
-      else
-        swap(&arr[l], &arr[--r]);
-    }
-    swap(&arr[--l], &arr[beg]);
-    sort(arr, beg, l);
-    sort(arr, r, end);
-  }
+int cmpintp(const void *p1, const void *p2) {
+  character *car1 = (character *)p1;
+  character *car2 = (character *)p2;
+
+  if(car1->frequence < car2->frequence ) { return -1; }
+  if(car1->frequence == car2->frequence ) { return 0; }
+  if(car1->frequence > car2->frequence ) { return 1; }
+
+  return 2;
 }
 

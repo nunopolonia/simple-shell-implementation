@@ -22,7 +22,7 @@ int cmd_ajuda();
 
 int cmd_hist();
 
-int cmd_stats();
+int cmd_stats(int statfd);
 
 #endif /* __CMDS_H__ */
 

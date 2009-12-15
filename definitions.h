@@ -29,6 +29,8 @@
 
 #define FIFO_PERMS (S_IRWXU | S_IWGRP| S_IWOTH)
 
+#define RBUF_SIZE 20480
+
 
 #endif /* __DEFINITIONS_H__ */
 

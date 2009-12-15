@@ -3,11 +3,13 @@
 
 #include "history.h"
 
+/* struct created for the stats function to have the character and it's frequence */
 typedef struct {
    char c;
    int frequence;
 } character;
 
+/* struct created to send commands to threads */
 typedef struct {
   int verbose;
   int *frequences;
@@ -41,9 +43,8 @@ void *readandcounttext(void *v);
 
 void *readandrespondtocmds(void *v);
 
-void swap(int *a, int *b)
-
-void sort(int arr[], int beg, int end)
+/* comparing function for qsort */
+int cmpintp(const void *p1, const void *p2);
 
 #endif /* __AUX_H__ */
 
